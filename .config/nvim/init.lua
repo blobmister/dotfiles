@@ -9,7 +9,7 @@ vim.api.nvim_create_autocmd("BufWritePost", {
 })
 
 
-
+-- test
 -- Basic Options
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
