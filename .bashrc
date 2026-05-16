@@ -12,3 +12,7 @@ PS1='[\u@\h \w]\$ '
 export EDTOR=nvim
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
+fi
