@@ -11,4 +11,4 @@ PS1='[\u@\h \w]\$ '
 
 export EDTOR=nvim
 
-config='/usr/bin/git --git-dir=$HOME/.dotfiles/ -- work-tree=$HOME'
+alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
