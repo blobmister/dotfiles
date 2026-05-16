@@ -1,14 +1,3 @@
--- AutoCommit Script
-vim.api.nvim_create_autocmd("BufWritePost", {
-	pattern = vim.fn.stdpath("config") .. "/*",
-	callback = function()
-		local script_path = vim.fn.stdpath("config") .. "/auto_push.sh"
-		vim.fn.jobstart({ "bash", script_path })
-	end,
-	desc = "Auto-push nvim config to GitHub on save",
-})
-
-
 -- Basic Options
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
