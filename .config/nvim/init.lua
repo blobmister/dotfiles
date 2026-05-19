@@ -38,7 +38,6 @@ vim.keymap.set('n', '<C-Right>', '<cmd>vertical resize -2<cr>', { desc = 'Increa
 vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/nvim-mini/mini.nvim" },
-	{ src = "https://github.com/nvim-telescope/telescope.nvim" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
@@ -51,7 +50,8 @@ vim.pack.add({
 	{ src = "https://github.com/MunifTanjim/nui.nvim" },
 	{ src = "https://github.com/stevearc/oil.nvim" },
 	{ src = "https://github.com/RRethy/base16-nvim" },
-	{ src = "https://github.com/acksld/nvim-neoclip.lua" }
+	{ src = "https://github.com/acksld/nvim-neoclip.lua" },
+	{ src = "https://github.com/ibhagwan/fzf-lua" }
 })
 
 -- -- Themes setup
@@ -159,30 +159,21 @@ miniclue.setup({
 
 require('neoclip').setup()
 
--- Telescope Setup
+-- fzf Setup
 
-local builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
-vim.keymap.set('n', '<leader>fa', function()
-	builtin.find_files({ hidden = true })
-end,
-{ desc = 'Telescope hidden files' })
-vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
-vim.keymap.set('n', '<leader>ft', function()
-	builtin.colorscheme({
-		enable_preview = true,
-		ignore_builtins = true,
-	})
-end, { desc = 'Telescope find themes' })
-vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = 'Telescope diagonstics' })
+local fzf = require("fzf-lua")
 
+vim.keymap.set('n', '<leader>ff', function() fzf.files( { hidden = false } ) end, { desc = 'Fzf files' })
+vim.keymap.set('n', '<leader>fa', function() fzf.files({ hidden = true }) end, { desc = 'Fzf hidden files' })
+vim.keymap.set('n', '<leader>fb', fzf.buffers, { desc = 'Fzf buffers' })
+vim.keymap.set('n', '<leader>fh', fzf.help_tags, { desc = 'Fzf help tags' })
+vim.keymap.set('n', '<leader>ft', fzf.colorschemes, { desc = 'Fzf find themes' })
+vim.keymap.set('n', '<leader>fd', fzf.diagnostics_workspace, { desc = 'Fzf diagnostics' })
 vim.keymap.set('n', '<leader>fc', function()
-	require('telescope.builtin').find_files({ cwd = vim.fn.stdpath('config') })
-end, { desc = 'Telescope find files' })
-vim.keymap.set('n', '<leader>fy', function()
-		require('telescope').extensions.neoclip.default()
-end, { desc = 'Telescope clipboard' })
+	fzf.files{ cwd = vim.fn.stdpath("config")}
+end,
+{ desc = 	'Fzf files in nvim directory' })
+
 
 -- Blink setup
 require("blink.cmp").setup()
@@ -209,4 +200,3 @@ vim.keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory
 -- termdebug
 vim.cmd("packadd! termdebug")
 vim.g.termdebug_wide = 1
-
