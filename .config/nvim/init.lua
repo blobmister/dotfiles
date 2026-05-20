@@ -18,6 +18,8 @@ vim.o.autoread = true
 vim.o.cursorline = true
 vim.o.cursorlineopt = "line,number"
 
+
+
 -- Default keymaps
 vim.keymap.set('n', '<C-h>', '<C-w>h')
 vim.keymap.set('n', '<C-j>', '<C-w>j')
@@ -48,10 +50,10 @@ vim.pack.add({
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim" },
 	{ src = "https://github.com/lervag/vimtex" },
 	{ src = "https://github.com/MunifTanjim/nui.nvim" },
-	{ src = "https://github.com/stevearc/oil.nvim" },
 	{ src = "https://github.com/RRethy/base16-nvim" },
 	{ src = "https://github.com/acksld/nvim-neoclip.lua" },
-	{ src = "https://github.com/ibhagwan/fzf-lua" }
+	{ src = "https://github.com/ibhagwan/fzf-lua" },
+	{ src = "https://github.com/mikavilpas/yazi.nvim" }
 })
 
 -- Pack Clean
@@ -128,7 +130,6 @@ require("mason-lspconfig").setup({
 
 vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format)
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename)
-vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action)
 vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover)
 vim.keymap.set("n", "gd", vim.lsp.buf.definition)
 
@@ -202,7 +203,17 @@ vim.keymap.set('n', '<leader>fc', function()
 	fzf.files{ cwd = vim.fn.stdpath("config")}
 end,
 { desc = 	'Fzf files in nvim directory' })
-
+vim.keymap.set('n', '<leader>fg', fzf.live_grep, { desc = 'Fzf live grep' })
+vim.keymap.set('n', '<leader>fw', fzf.grep_cword, { desc = 'Fzf grep word under cursor' })
+vim.keymap.set('v', '<leader>fw', fzf.grep_visual, { desc = 'Fzf grep visual selection' })
+vim.keymap.set('n', '<leader>lr', fzf.lsp_references, { desc = 'Fzf LSP references' })
+vim.keymap.set('n', '<leader>ld', fzf.lsp_definitions, { desc = 'Fzf LSP definitions' })
+vim.keymap.set('n', '<leader>ls', fzf.lsp_document_symbols, { desc = 'Fzf LSP document symbols' })
+vim.keymap.set('n', '<leader>lS', fzf.lsp_workspace_symbols, { desc = 'Fzf LSP workspace symbols' })
+vim.keymap.set("n", "<leader>ca", fzf.lsp_code_actions, { desc = "Fzf code actions" })
+vim.keymap.set('n', '<leader>fy', function() 
+    require('neoclip.fzf')() 
+end, { desc = 'Fzf clipboard/yank history' })
 
 -- Blink setup
 require("blink.cmp").setup()
@@ -221,10 +232,26 @@ vim.g.vimtex_view_method = "zathura"
 vim.g.vimtex_quickfix_mode = 0
 vim.g.vimtex_compiler_silent = 1
 
--- Oil.nvim
-require("oil").setup()
+-- Yazi Setup
+vim.g.loaded_netrwPlugin = 1
 
-vim.keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
+vim.keymap.set("n", "<leader>-", "<cmd>Yazi<CR>", { desc="Open Yazi File Explorer" })
+
+vim.api.nvim_create_autocmd("UIEnter", {
+  callback = function()
+    require("yazi").setup({
+      open_for_directories = true,
+      integrations = {
+        grep_in_directory = function(dir)
+          require("fzf-lua").live_grep({ cwd = dir })
+        end,
+        grep_in_selected_files = function(selected_files)
+          require("fzf-lua").live_grep()
+        end,
+      }
+    })
+  end,
+})
 
 -- termdebug
 vim.cmd("packadd! termdebug")
