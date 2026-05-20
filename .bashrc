@@ -16,3 +16,5 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
 	eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv bash)"
 fi
+
+alias ts='~/.local/bin/tmux-sessionizer.sh'
