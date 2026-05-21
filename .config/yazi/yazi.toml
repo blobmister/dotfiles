@@ -5,5 +5,5 @@ tmux_session = [
 
 [open]
 prepend_rules = [
-    { url = "*/", use = [ "open", "tmux_session", "edit", "reveal" ] }
+    { url = "*/", use = [ "tmux_session", "open", "edit", "reveal" ] }
 ]
