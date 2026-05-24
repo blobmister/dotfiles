@@ -18,8 +18,6 @@ vim.o.autoread = true
 vim.o.cursorline = true
 vim.o.cursorlineopt = "line,number"
 
-
-
 -- Default keymaps
 vim.keymap.set('n', '<C-h>', '<C-w>h')
 vim.keymap.set('n', '<C-j>', '<C-w>j')
@@ -53,7 +51,8 @@ vim.pack.add({
 	{ src = "https://github.com/RRethy/base16-nvim" },
 	{ src = "https://github.com/acksld/nvim-neoclip.lua" },
 	{ src = "https://github.com/ibhagwan/fzf-lua" },
-	{ src = "https://github.com/mikavilpas/yazi.nvim" }
+	{ src = "https://github.com/mikavilpas/yazi.nvim" },
+	{ src = "https://github.com/xiyaowong/transparent.nvim" }
 })
 
 -- Pack Clean
@@ -256,3 +255,6 @@ vim.api.nvim_create_autocmd("UIEnter", {
 -- termdebug
 vim.cmd("packadd! termdebug")
 vim.g.termdebug_wide = 1
+
+-- Transparent BG
+require("transparent").setup()
