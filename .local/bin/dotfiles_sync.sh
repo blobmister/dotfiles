@@ -5,6 +5,7 @@ dotfiles() {
 }
 
 if ! dotfiles diff --quiet; then
+	dotfiles pull
 	dotfiles add -u
 	CURRENT_DATE=$(date '+%Y-%m-%d %H:%M:%S')
 	dotfiles commit -m "Auto-sync dotfiles: $CURRENT_DATE"
