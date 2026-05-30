@@ -3,10 +3,8 @@
 LAUNCHER_CLASS="fzf-launcher"
 LOCK_FILE="/dev/shm/fzf-launcher.lock"
 
-exec 9>>"$LOCK_FILE"
-
 if [ ! -t 1 ]; then
-    if ! flock -n 9; then
+    if ! flock -n "$LOCK_FILE" true; then
         TARGET_PID=$(cat "$LOCK_FILE" 2>/dev/null)
         if [ -n "$TARGET_PID" ]; then
             kill "$TARGET_PID" 2>/dev/null
@@ -16,17 +14,16 @@ if [ ! -t 1 ]; then
 fi
 
 if [ ! -t 1 ]; then
-    alacritty --class "$LAUNCHER_CLASS","$LAUNCHER_CLASS" \
-              --title "App Launcher" \
-              -o "window.padding={x=20, y=20}" \
-              -o "window.decorations=None" \
-              -o "window.dimensions={columns=80, lines=15}" \
-              -e bash -c "$0" &
-              
-    ALACRITTY_PID=$!
-    echo "$ALACRITTY_PID" > "$LOCK_FILE"
-    
-    wait "$ALACRITTY_PID" 2>/dev/null
+    flock -n "$LOCK_FILE" -c "
+        alacritty --class '$LAUNCHER_CLASS','$LAUNCHER_CLASS' \
+                  --title 'App Launcher' \
+                  -o 'window.padding={x=20, y=20}' \
+                  -o 'window.decorations=None' \
+                  -o 'window.dimensions={columns=80, lines=15}' \
+                  -e bash -c '$0' &
+        echo \$! > '$LOCK_FILE'
+        wait \$! 2>/dev/null
+    "
     exit 0
 fi
 
