@@ -19,3 +19,4 @@ fi
 
 alias ts='~/.local/bin/tmux-sessionizer.sh'
 alias dotsync='~/.local/bin/dotfiles_sync.sh'
+alias fzflaunch='~/.local/bin/fzf-launcher.sh'
