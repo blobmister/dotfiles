@@ -11,9 +11,7 @@ if [ ! -t 1 ]; then
         fi
         exit 0
     fi
-fi
 
-if [ ! -t 1 ]; then
     flock -n "$LOCK_FILE" -c "
         alacritty --class '$LAUNCHER_CLASS','$LAUNCHER_CLASS' \
                   --title 'App Launcher' \
@@ -27,16 +25,31 @@ if [ ! -t 1 ]; then
     exit 0
 fi
 
+
 desktop_files=$(find /usr/share/applications ~/.local/share/applications -maxdepth 2 -name "*.desktop" 2>/dev/null | awk -F/ '{print $NF}' | sed 's/\.desktop$//' | sort -u)
 
-chosen=$(echo "$desktop_files" | fzf --no-hscroll \
-                                     --reverse \
-                                     --prompt=">  " \
-                                     --border=none \
-                                     --info=hidden \
-                                     --margin=1,2)
+fzf_output=$(echo "$desktop_files" | fzf --no-hscroll \
+                                         --reverse \
+                                         --prompt="> " \
+                                         --border=none \
+                                         --info=hidden \
+                                         --margin=1,2 \
+                                         --print-query)
 
-if [[ -n "$chosen" ]]; then
-    setsid gtk-launch "$chosen" >/dev/null 2>&1 &
+query=$(echo "$fzf_output" | head -n 1)
+selection=$(echo "$fzf_output" | sed -n '2p')
+
+if [[ "$query" =~ ^g\ +(.*) ]]; then
+    search_terms="${BASH_REMATCH[1]}"
+    search_string=$(echo "$search_terms" | tr ' ' '+')
+    setsid xdg-open "https://www.google.com/search?q=${search_string}" >/dev/null 2>&1 &
+    sleep 0.1
+
+elif [[ -n "$selection" ]] && echo "$desktop_files" | grep -qxF "$selection"; then
+    setsid gtk-launch "$selection" >/dev/null 2>&1 &
+    sleep 0.1
+
+elif [[ -n "$query" ]] && echo "$desktop_files" | grep -qxF "$query"; then
+    setsid gtk-launch "$query" >/dev/null 2>&1 &
     sleep 0.1
 fi

@@ -51,8 +51,8 @@ vim.pack.add({
 	{ src = "https://github.com/RRethy/base16-nvim" },
 	{ src = "https://github.com/acksld/nvim-neoclip.lua" },
 	{ src = "https://github.com/ibhagwan/fzf-lua" },
-	{ src = "https://github.com/mikavilpas/yazi.nvim" },
-	{ src = "https://github.com/xiyaowong/transparent.nvim" }
+	{ src = "https://github.com/xiyaowong/transparent.nvim" },
+	{ src = "https://github.com/stevearc/oil.nvim" }
 })
 
 -- Pack Clean
@@ -207,12 +207,12 @@ vim.keymap.set('n', '<leader>fw', fzf.grep_cword, { desc = 'Fzf grep word under 
 vim.keymap.set('v', '<leader>fw', fzf.grep_visual, { desc = 'Fzf grep visual selection' })
 vim.keymap.set('n', '<leader>lr', fzf.lsp_references, { desc = 'Fzf LSP references' })
 vim.keymap.set('n', '<leader>ld', fzf.lsp_definitions, { desc = 'Fzf LSP definitions' })
-vim.keymap.set('n', '<leader>ls', fzf.lsp_document_symbols, { desc = 'Fzf LSP document symbols' })
-vim.keymap.set('n', '<leader>lS', fzf.lsp_workspace_symbols, { desc = 'Fzf LSP workspace symbols' })
+vim.keymap.set('n', '<leader>ls', fzf.lsp_workspace_symbols, { desc = 'Fzf LSP workspace symbols' })
 vim.keymap.set("n", "<leader>ca", fzf.lsp_code_actions, { desc = "Fzf code actions" })
 vim.keymap.set('n', '<leader>fy', function() 
     require('neoclip.fzf')() 
 end, { desc = 'Fzf clipboard/yank history' })
+vim.keymap.set('n', '<leader>fk', fzf.keymaps, { desc = "Fzf keymaps" })
 
 -- Blink setup
 require("blink.cmp").setup()
@@ -231,30 +231,36 @@ vim.g.vimtex_view_method = "zathura"
 vim.g.vimtex_quickfix_mode = 0
 vim.g.vimtex_compiler_silent = 1
 
--- Yazi Setup
-vim.g.loaded_netrwPlugin = 1
+-- Oil Setup
+require("oil").setup()
+vim.keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 
-vim.keymap.set("n", "<leader>-", "<cmd>Yazi<CR>", { desc="Open Yazi File Explorer" })
 
-vim.api.nvim_create_autocmd("UIEnter", {
-  callback = function()
-    require("yazi").setup({
-      open_for_directories = true,
-      integrations = {
-        grep_in_directory = function(dir)
-          require("fzf-lua").live_grep({ cwd = dir })
-        end,
-        grep_in_selected_files = function(selected_files)
-          require("fzf-lua").live_grep()
-        end,
-      }
-    })
-  end,
-})
 
 -- termdebug
 vim.cmd("packadd! termdebug")
 vim.g.termdebug_wide = 1
 
--- Transparent BG
-require("transparent").setup()
+-- TMUX sessionizer in fzf-lua
+
+vim.keymap.set('n', '<leader>ts', function()
+  local cmd = "fd --type d --hidden --exclude .git"
+
+  require('fzf-lua').fzf_exec(cmd, {
+    prompt = "Tmux Session> ",
+    cwd = vim.env.HOME, 
+    actions = {
+      ["default"] = function(selected)
+        if not selected or #selected == 0 then return end
+
+        local selected_path = selected[1]:match("^%s*(.-)%s*$")
+        local full_path = vim.env.HOME .. "/" .. selected_path
+       	
+		local script_cmd = vim.fn.expand("~/.local/bin/tmux-sessionizer.sh")
+        vim.fn.system({ script_cmd, full_path })
+        
+        vim.notify("Switching to session for: " .. selected_path, vim.log.levels.INFO)
+      end
+    }
+  })
+end, { desc = "Fuzzy find directory to create/switch Tmux session" })
