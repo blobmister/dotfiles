@@ -52,7 +52,9 @@ vim.pack.add({
 	{ src = "https://github.com/acksld/nvim-neoclip.lua" },
 	{ src = "https://github.com/ibhagwan/fzf-lua" },
 	{ src = "https://github.com/xiyaowong/transparent.nvim" },
-	{ src = "https://github.com/stevearc/oil.nvim" }
+	{ src = "https://github.com/stevearc/oil.nvim" },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = 'main' },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" }
 })
 
 -- Pack Clean
@@ -132,11 +134,61 @@ vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename)
 vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover)
 vim.keymap.set("n", "gd", vim.lsp.buf.definition)
 
+-- Treesitter
+
+require('nvim-treesitter').setup()
+
+vim.api.nvim_create_autocmd('FileType', {
+    callback = function()
+        pcall(vim.treesitter.start)
+        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end,
+})
+
+require("nvim-treesitter-textobjects").setup()
+
+vim.keymap.set({ "x", "o" }, "am", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@function.outer", "textobjects")
+end, {desc = "treesitter around method/function" })
+vim.keymap.set({ "x", "o" }, "im", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@function.inner", "textobjects")
+end, {desc = "treesitter inner method/function" })
+vim.keymap.set({ "x", "o" }, "ac", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@class.outer", "textobjects")
+end, {desc = "treesitter around class"})
+vim.keymap.set({ "x", "o" }, "ic", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@class.inner", "textobjects")
+end, {desc = "treesitter inner class"})
+vim.keymap.set({ "x", "o" }, "ib", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@block.inner", "textobjects")
+end, {desc = "treesitter block inner"})
+vim.keymap.set({ "x", "o" }, "ab", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@block.outer", "textobjects")
+end, {desc = "treesitter block outer"})
+vim.keymap.set({ "x", "o" }, "al", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@loop.outer", "textobjects")
+end, {desc = "treesitter loop outer"})
+vim.keymap.set({ "x", "o" }, "il", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@loop.inner", "textobjects")
+end, {desc = "treesitter loop inner"})
+vim.keymap.set({ "x", "o" }, "ai", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@conditional.outer", "textobjects")
+end, {desc = "treesitter conditional outer"})
+vim.keymap.set({ "x", "o" }, "ii", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@conditional.inner", "textobjects")
+end, {desc = "treesitter conditional inner"})
+vim.keymap.set({ "x", "o" }, "i/", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@comment.inner", "textobjects")
+end, {desc = "treesitter comment inner"})
+vim.keymap.set({ "x", "o" }, "a/", function()
+  require "nvim-treesitter-textobjects.select".select_textobject("@comment.outer", "textobjects")
+end, {desc = "treesitter comment outer"})
+
 -- Mini Modules
+
 require("mini.surround").setup()
 require("mini.pairs").setup()
 require("mini.icons").setup()
-require("mini.ai").setup()
 require("mini.move").setup()
 require("mini.cursorword").setup()
 require("mini.indentscope").setup()
