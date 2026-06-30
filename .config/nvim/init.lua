@@ -1,3 +1,20 @@
+-- Fix errors in lua.config
+vim.lsp.config('lua_ls', {
+	settings = {
+		Lua = {
+			runtime = { version = 'LuaJIT' },
+			diagnostics = { globals = { 'vim' } },
+			workspace = {
+				checkThirdParty = false,
+				library = {
+					vim.env.VIMRUNTIME,
+				},
+			},
+			telemetry = { enable = false },
+		},
+	},
+})
+
 -- Basic Options
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
@@ -17,6 +34,7 @@ vim.o.showmode = false
 vim.o.autoread = true
 vim.o.cursorline = true
 vim.o.cursorlineopt = "line,number"
+
 
 -- Default keymaps
 vim.keymap.set('n', '<C-h>', '<C-w>h')
@@ -53,8 +71,10 @@ vim.pack.add({
 	{ src = "https://github.com/ibhagwan/fzf-lua" },
 	{ src = "https://github.com/xiyaowong/transparent.nvim" },
 	{ src = "https://github.com/stevearc/oil.nvim" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = 'main' },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" }
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter",            version = 'main' },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" },
+	{ src = "https://github.com/kevinhwang91/promise-async" },
+	{ src = "https://github.com/kevinhwang91/nvim-ufo" }
 })
 
 -- Pack Clean
@@ -139,50 +159,99 @@ vim.keymap.set("n", "gd", vim.lsp.buf.definition)
 require('nvim-treesitter').setup()
 
 vim.api.nvim_create_autocmd('FileType', {
-    callback = function()
-        pcall(vim.treesitter.start)
-        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    end,
+	callback = function()
+		pcall(vim.treesitter.start)
+		vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+	end,
 })
 
-require("nvim-treesitter-textobjects").setup()
+
+require("nvim-treesitter-textobjects").setup {
+	select = {
+		lookahead = true
+	},
+	move = {
+		set_jumps = true,
+	},
+}
 
 vim.keymap.set({ "x", "o" }, "am", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@function.outer", "textobjects")
-end, {desc = "treesitter around method/function" })
+	require "nvim-treesitter-textobjects.select".select_textobject("@function.outer", "textobjects")
+end, { desc = "treesitter around method/function" })
 vim.keymap.set({ "x", "o" }, "im", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@function.inner", "textobjects")
-end, {desc = "treesitter inner method/function" })
+	require "nvim-treesitter-textobjects.select".select_textobject("@function.inner", "textobjects")
+end, { desc = "treesitter inner method/function" })
 vim.keymap.set({ "x", "o" }, "ac", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@class.outer", "textobjects")
-end, {desc = "treesitter around class"})
+	require "nvim-treesitter-textobjects.select".select_textobject("@class.outer", "textobjects")
+end, { desc = "treesitter around class" })
 vim.keymap.set({ "x", "o" }, "ic", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@class.inner", "textobjects")
-end, {desc = "treesitter inner class"})
-vim.keymap.set({ "x", "o" }, "ib", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@block.inner", "textobjects")
-end, {desc = "treesitter block inner"})
-vim.keymap.set({ "x", "o" }, "ab", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@block.outer", "textobjects")
-end, {desc = "treesitter block outer"})
+	require "nvim-treesitter-textobjects.select".select_textobject("@class.inner", "textobjects")
+end, { desc = "treesitter inner class" })
+vim.keymap.set({ "x", "o" }, "ik", function()
+	require "nvim-treesitter-textobjects.select".select_textobject("@block.inner", "textobjects")
+end, { desc = "treesitter block inner" })
+vim.keymap.set({ "x", "o" }, "ak", function()
+	require "nvim-treesitter-textobjects.select".select_textobject("@block.outer", "textobjects")
+end, { desc = "treesitter block outer" })
 vim.keymap.set({ "x", "o" }, "al", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@loop.outer", "textobjects")
-end, {desc = "treesitter loop outer"})
+	require "nvim-treesitter-textobjects.select".select_textobject("@loop.outer", "textobjects")
+end, { desc = "treesitter loop outer" })
 vim.keymap.set({ "x", "o" }, "il", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@loop.inner", "textobjects")
-end, {desc = "treesitter loop inner"})
+	require "nvim-treesitter-textobjects.select".select_textobject("@loop.inner", "textobjects")
+end, { desc = "treesitter loop inner" })
 vim.keymap.set({ "x", "o" }, "ai", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@conditional.outer", "textobjects")
-end, {desc = "treesitter conditional outer"})
+	require "nvim-treesitter-textobjects.select".select_textobject("@conditional.outer", "textobjects")
+end, { desc = "treesitter conditional outer" })
 vim.keymap.set({ "x", "o" }, "ii", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@conditional.inner", "textobjects")
-end, {desc = "treesitter conditional inner"})
+	require "nvim-treesitter-textobjects.select".select_textobject("@conditional.inner", "textobjects")
+end, { desc = "treesitter conditional inner" })
 vim.keymap.set({ "x", "o" }, "i/", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@comment.inner", "textobjects")
-end, {desc = "treesitter comment inner"})
+	require "nvim-treesitter-textobjects.select".select_textobject("@comment.inner", "textobjects")
+end, { desc = "treesitter comment inner" })
 vim.keymap.set({ "x", "o" }, "a/", function()
-  require "nvim-treesitter-textobjects.select".select_textobject("@comment.outer", "textobjects")
-end, {desc = "treesitter comment outer"})
+	require "nvim-treesitter-textobjects.select".select_textobject("@comment.outer", "textobjects")
+end, { desc = "treesitter comment outer" })
+
+-- Movement
+
+vim.keymap.set({ "n", "x", "o" }, "]m", function()
+	require("nvim-treesitter-textobjects.move").goto_next_start("@function.outer", "textobjects")
+end, { desc = "treesitter goto next function" })
+vim.keymap.set({ "n", "x", "o" }, "]l", function()
+	require("nvim-treesitter-textobjects.move").goto_next_start("@loop.outer", "textobjects")
+end, { desc = "treesitter goto next loop" })
+vim.keymap.set({ "n", "x", "o" }, "]k", function()
+	require("nvim-treesitter-textobjects.move").goto_next_start("@block.outer", "locals")
+end, { desc = "treesitter goto next block" })
+vim.keymap.set({ "n", "x", "o" }, "]i", function()
+	require("nvim-treesitter-textobjects.move").goto_next_start("@conditional.outer", "locals")
+end, { desc = "treesitter goto next conditional" })
+vim.keymap.set({ "n", "x", "o" }, "]c", function()
+	require("nvim-treesitter-textobjects.move").goto_next_end("@class.outer", "textobjects")
+end, { desc = "treesiter goto next class" })
+vim.keymap.set({ "n", "x", "o" }, "[m", function()
+	require("nvim-treesitter-textobjects.move").goto_previous_start("@function.outer", "textobjects")
+end, { desc = "treesitter goto prev function" })
+vim.keymap.set({ "n", "x", "o" }, "[c", function()
+	require("nvim-treesitter-textobjects.move").goto_previous_start("@class.outer", "textobjects")
+end, { desc = "treesiter goto prev class" })
+vim.keymap.set({ "n", "x", "o" }, "[l", function()
+	require("nvim-treesitter-textobjects.move").goto_previous_start({ "@loop.inner", "@loop.outer" }, "textobjects")
+end, { desc = "treesitter goto prev loop" })
+vim.keymap.set({ "n", "x", "o" }, "[k", function()
+	require("nvim-treesitter-textobjects.move").goto_previous_start("@block.outer", "locals")
+end, { desc = "treesittter goto prev block" })
+vim.keymap.set({ "n", "x", "o" }, "[i", function()
+	require("nvim-treesitter-textobjects.move").goto_previous_start("@conditional.outer", "locals")
+end, { desc = "treesitter goto prev conditional" })
+
+local ts_repeat_move = require "nvim-treesitter-textobjects.repeatable_move"
+vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move, { desc = "Repeat last move" })
+vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite, { desc = "Undo last move" })
+vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f_expr, { expr = true })
+vim.keymap.set({ "n", "x", "o" }, "F", ts_repeat_move.builtin_F_expr, { expr = true })
+vim.keymap.set({ "n", "x", "o" }, "t", ts_repeat_move.builtin_t_expr, { expr = true })
+vim.keymap.set({ "n", "x", "o" }, "T", ts_repeat_move.builtin_T_expr, { expr = true })
 
 -- Mini Modules
 
@@ -244,16 +313,16 @@ require('neoclip').setup()
 
 local fzf = require("fzf-lua")
 
-vim.keymap.set('n', '<leader>ff', function() fzf.files( { hidden = false } ) end, { desc = 'Fzf files' })
+vim.keymap.set('n', '<leader>ff', function() fzf.files({ hidden = false }) end, { desc = 'Fzf files' })
 vim.keymap.set('n', '<leader>fa', function() fzf.files({ hidden = true }) end, { desc = 'Fzf hidden files' })
 vim.keymap.set('n', '<leader>fb', fzf.buffers, { desc = 'Fzf buffers' })
 vim.keymap.set('n', '<leader>fh', fzf.help_tags, { desc = 'Fzf help tags' })
 vim.keymap.set('n', '<leader>ft', fzf.colorschemes, { desc = 'Fzf find themes' })
 vim.keymap.set('n', '<leader>fd', fzf.diagnostics_workspace, { desc = 'Fzf diagnostics' })
 vim.keymap.set('n', '<leader>fc', function()
-	fzf.files{ cwd = vim.fn.stdpath("config")}
-end,
-{ desc = 	'Fzf files in nvim directory' })
+		fzf.files { cwd = vim.fn.stdpath("config") }
+	end,
+	{ desc = 'Fzf files in nvim directory' })
 vim.keymap.set('n', '<leader>fg', fzf.live_grep, { desc = 'Fzf live grep' })
 vim.keymap.set('n', '<leader>fw', fzf.grep_cword, { desc = 'Fzf grep word under cursor' })
 vim.keymap.set('v', '<leader>fw', fzf.grep_visual, { desc = 'Fzf grep visual selection' })
@@ -261,13 +330,16 @@ vim.keymap.set('n', '<leader>lr', fzf.lsp_references, { desc = 'Fzf LSP referenc
 vim.keymap.set('n', '<leader>ld', fzf.lsp_definitions, { desc = 'Fzf LSP definitions' })
 vim.keymap.set('n', '<leader>ls', fzf.lsp_workspace_symbols, { desc = 'Fzf LSP workspace symbols' })
 vim.keymap.set("n", "<leader>ca", fzf.lsp_code_actions, { desc = "Fzf code actions" })
-vim.keymap.set('n', '<leader>fy', function() 
-    require('neoclip.fzf')() 
+vim.keymap.set('n', '<leader>fy', function()
+	require('neoclip.fzf')()
 end, { desc = 'Fzf clipboard/yank history' })
 vim.keymap.set('n', '<leader>fk', fzf.keymaps, { desc = "Fzf keymaps" })
 
 -- Blink setup
 require("blink.cmp").setup()
+local cmp = require('blink.cmp')
+cmp.build():pwait()
+cmp.setup()
 
 -- ToggleTerm setup
 require("toggleterm").setup({
@@ -296,23 +368,37 @@ vim.g.termdebug_wide = 1
 -- TMUX sessionizer in fzf-lua
 
 vim.keymap.set('n', '<leader>ts', function()
-  local cmd = "fd --type d --hidden --exclude .git"
+	local cmd = "fd --type d --hidden --exclude .git"
 
-  require('fzf-lua').fzf_exec(cmd, {
-    prompt = "Tmux Session> ",
-    cwd = vim.env.HOME, 
-    actions = {
-      ["default"] = function(selected)
-        if not selected or #selected == 0 then return end
+	require('fzf-lua').fzf_exec(cmd, {
+		prompt = "Tmux Session> ",
+		cwd = vim.env.HOME,
+		actions = {
+			["default"] = function(selected)
+				if not selected or #selected == 0 then return end
 
-        local selected_path = selected[1]:match("^%s*(.-)%s*$")
-        local full_path = vim.env.HOME .. "/" .. selected_path
-       	
-		local script_cmd = vim.fn.expand("~/.local/bin/tmux-sessionizer.sh")
-        vim.fn.system({ script_cmd, full_path })
-        
-        vim.notify("Switching to session for: " .. selected_path, vim.log.levels.INFO)
-      end
-    }
-  })
+				local selected_path = selected[1]:match("^%s*(.-)%s*$")
+				local full_path = vim.env.HOME .. "/" .. selected_path
+
+				local script_cmd = vim.fn.expand("~/.local/bin/tmux-sessionizer.sh")
+				vim.fn.system({ script_cmd, full_path })
+
+				vim.notify("Switching to session for: " .. selected_path, vim.log.levels.INFO)
+			end
+		}
+	})
 end, { desc = "Fuzzy find directory to create/switch Tmux session" })
+
+-- Better fold support
+vim.o.foldcolumn = '1'
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
+vim.o.foldenable = true
+vim.keymap.set('n', 'zR', require('ufo').openAllFolds, { desc = "Open all fold expressions" })
+vim.keymap.set('n', 'zM', require('ufo').closeAllFolds, { desc = "Close all fold expressions" })
+
+require('ufo').setup({
+	provider_selector = function(bufnr, filetype, buftype)
+		return { 'treesitter', 'indent' }
+	end
+})
