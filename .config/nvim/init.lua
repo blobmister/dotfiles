@@ -267,6 +267,8 @@ require("mini.move").setup()
 require("mini.cursorword").setup()
 require("mini.indentscope").setup()
 
+require('mini.diff').setup()
+
 local miniclue = require('mini.clue')
 miniclue.setup({
 	triggers = {
@@ -342,9 +344,6 @@ vim.keymap.set('n', '<leader>fk', fzf.keymaps, { desc = "Fzf keymaps" })
 
 -- Blink setup
 require("blink.cmp").setup()
-local cmp = require('blink.cmp')
-cmp.build():pwait()
-cmp.setup()
 
 -- ToggleTerm setup
 require("toggleterm").setup({
