@@ -250,6 +250,13 @@ end, { desc = "treesittter goto prev block" })
 vim.keymap.set({ "n", "x", "o" }, "[i", function()
 	require("nvim-treesitter-textobjects.move").goto_previous_start("@conditional.outer", "locals")
 end, { desc = "treesitter goto prev conditional" })
+vim.keymap.set({ "n", "x", "o" }, "]/", function()
+    require("nvim-treesitter-textobjects.move").goto_next_start("@comment.outer", "textobjects")
+end, { desc = "treesitter goto next comment" })
+
+vim.keymap.set({ "n", "x", "o" }, "[/", function()
+    require("nvim-treesitter-textobjects.move").goto_previous_start("@comment.outer", "textobjects")
+end, { desc = "treesitter goto prev comment" })
 
 local ts_repeat_move = require "nvim-treesitter-textobjects.repeatable_move"
 vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move, { desc = "Repeat last move" })
