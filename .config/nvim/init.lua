@@ -33,8 +33,8 @@ vim.o.showmode = false
 vim.o.autoread = true
 vim.o.cursorline = true
 vim.o.cursorlineopt = "line,number"
-vim.opt.number = true
-vim.opt.relativenumber = true
+
+
 
 -- Default keymaps
 vim.keymap.set('n', '<C-h>', '<C-w>h')
@@ -75,7 +75,8 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" },
 	{ src = "https://github.com/kevinhwang91/promise-async" },
 	{ src = "https://github.com/kevinhwang91/nvim-ufo" },
-	{ src = "https://github.com/luukvbaal/statuscol.nvim" }
+	{ src = "https://github.com/luukvbaal/statuscol.nvim" },
+	{ src = "https://github.com/lewis6991/gitsigns.nvim" }
 })
 
 -- Pack Clean
@@ -267,8 +268,6 @@ require("mini.move").setup()
 require("mini.cursorword").setup()
 require("mini.indentscope").setup()
 
-require('mini.diff').setup()
-
 local miniclue = require('mini.clue')
 miniclue.setup({
 	triggers = {
@@ -443,27 +442,125 @@ require('ufo').setup({
 })
 
 -- status-col
+vim.opt.number = true
+vim.opt.relativenumber = true
 
-local builtin = require('statuscol.builtin')
-
+local builtin = require("statuscol.builtin")
 require('statuscol').setup({
-	setopt = true,
-	segments = {
-		{
-			text = { builtin.foldfunc }
-		},
-		{
-			text = { '%s' }
-		},
-		{
-			text = { " %{v:lnum} %{v:relnum == 0 ? ' ' : v:relnum} " },
-		},
-	},
+  setopt = true,
+  segments = {
+    { text = { builtin.foldfunc } },
+    { text = { '%s' } },
+    {
+      text = { builtin.lnumfunc, ' ' },
+      condition = { true, builtin.not_empty },
+    },
+  },
 })
 
+local augroup = vim.api.nvim_create_augroup("numbertoggle", { clear = true })
+
+vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave", "CmdlineLeave", "WinEnter" }, {
+   pattern = "*",
+   group = augroup,
+   callback = function()
+      if vim.o.nu and vim.api.nvim_get_mode().mode ~= "i" then
+         vim.opt.relativenumber = true
+      end
+   end,
+})
+
+vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter", "CmdlineEnter", "WinLeave" }, {
+   pattern = "*",
+   group = augroup,
+   callback = function()
+      if vim.o.nu then
+         vim.opt.relativenumber = false
+
+         -- Workaround for https://github.com/neovim/neovim/issues/32068
+         if not vim.tbl_contains({"@", "-"}, vim.v.event.cmdtype) then
+            vim.cmd "redraw"
+         end
+      end
+   end,
+})
 
 vim.opt.fillchars:append({
 	foldopen = "",
 	foldclose = "",
 	foldsep = " ",
 })
+
+-- Git Integration
+require('gitsigns').setup{
+  on_attach = function(bufnr)
+    local gitsigns = require('gitsigns')
+
+    local function map(mode, l, r, opts)
+      opts = opts or {}
+      opts.buffer = bufnr
+      vim.keymap.set(mode, l, r, opts)
+    end
+
+    -- Navigation
+    map('n', ']c', function()
+      if vim.wo.diff then
+        vim.cmd.normal({']c', bang = true})
+      else
+        gitsigns.nav_hunk('next')
+      end
+    end, { desc = "Git: Jump to next hunk" })
+
+    map('n', '[c', function()
+      if vim.wo.diff then
+        vim.cmd.normal({'[c', bang = true})
+      else
+        gitsigns.nav_hunk('prev')
+      end
+    end, { desc = "Git: Jump to previous hunk" })
+
+    -- Actions
+    map('n', '<leader>hs', gitsigns.stage_hunk, { desc = "Git: Stage hunk" })
+    map('n', '<leader>hr', gitsigns.reset_hunk, { desc = "Git: Reset hunk" })
+
+    map('v', '<leader>hs', function()
+      gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+    end, { desc = "Git: Stage selected lines" })
+
+    map('v', '<leader>hr', function()
+      gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+    end, { desc = "Git: Reset selected lines" })
+
+    map('n', '<leader>hS', gitsigns.stage_buffer, { desc = "Git: Stage entire buffer" })
+    map('n', '<leader>hR', gitsigns.reset_buffer, { desc = "Git: Reset entire buffer" })
+    map('n', '<leader>hp', gitsigns.preview_hunk, { desc = "Git: Preview hunk in float" })
+    map('n', '<leader>hi', gitsigns.preview_hunk_inline, { desc = "Git: Preview hunk inline" })
+
+    map('n', '<leader>hb', function()
+      gitsigns.blame_line({ full = true })
+    end, { desc = "Git: Show full line blame" })
+
+    map('n', '<leader>hd', gitsigns.diffthis, { desc = "Git: Diff against index" })
+
+    map('n', '<leader>hD', function()
+      gitsigns.diffthis('~')
+    end, { desc = "Git: Diff against last commit" })
+
+    map('n', '<leader>hQ', function() gitsigns.setqflist('all') end, { desc = "Git: Send all project hunks to quickfix" })
+    map('n', '<leader>hq', gitsigns.setqflist, { desc = "Git: Send buffer hunks to quickfix" })
+
+    -- Toggles
+    map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = "Git: Toggle inline blame text" })
+    map('n', '<leader>tw', gitsigns.toggle_word_diff, { desc = "Git: Toggle word-level diff" })
+
+    -- Text object
+    map({'o', 'x'}, 'ih', gitsigns.select_hunk, { desc = "Git: Select inner hunk" })
+  end
+}
+
+
+-- quickfix keybinds
+vim.keymap.set("n", "]q", "<cmd>cnext<CR>", { desc = "Quickfix: Next item" })
+vim.keymap.set("n", "[q", "<cmd>cprev<CR>", { desc = "Quickfix: Previous item" })
+vim.keymap.set("n", "<leader>qo", "<cmd>copen<CR>", { desc = "Quickfix: Open window" })
+vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>", { desc = "Quickfix: Close window" })
