@@ -19,7 +19,6 @@ vim.lsp.config('lua_ls', {
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 vim.o.number = true
-vim.o.relativenumber = true
 vim.o.wrap = false
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
@@ -34,7 +33,8 @@ vim.o.showmode = false
 vim.o.autoread = true
 vim.o.cursorline = true
 vim.o.cursorlineopt = "line,number"
-
+vim.opt.number = true
+vim.opt.relativenumber = true
 
 -- Default keymaps
 vim.keymap.set('n', '<C-h>', '<C-w>h')
@@ -161,12 +161,12 @@ require('nvim-treesitter').setup()
 -- Treesitter highlighting
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = '*',
-  callback = function(args)
-    if pcall(vim.treesitter.start, args.buf) then
-      vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-    end
-  end,
+	pattern = '*',
+	callback = function(args)
+		if pcall(vim.treesitter.start, args.buf) then
+			vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+		end
+	end,
 })
 
 -- Treesitter Textobjects config
@@ -405,34 +405,34 @@ vim.keymap.set('n', 'zr', require('ufo').openFoldsExceptKinds, { desc = "Fold le
 vim.keymap.set('n', 'zm', require('ufo').closeFoldsWith, { desc = "Fold more" })
 
 local handler = function(virtText, lnum, endLnum, width, truncate)
-    local newVirtText = {}
-    local suffix = (' 󰁂 %d '):format(endLnum - lnum)
-    local sufWidth = vim.fn.strdisplaywidth(suffix)
-    local targetWidth = width - sufWidth
-    local curWidth = 0
-    for _, chunk in ipairs(virtText) do
-        local chunkText = chunk[1]
-        local chunkWidth = vim.fn.strdisplaywidth(chunkText)
-        if targetWidth > curWidth + chunkWidth then
-            table.insert(newVirtText, chunk)
-        else
-            chunkText = truncate(chunkText, targetWidth - curWidth)
-            local hlGroup = chunk[2]
-            table.insert(newVirtText, {chunkText, hlGroup})
-            chunkWidth = vim.fn.strdisplaywidth(chunkText)
-            if curWidth + chunkWidth < targetWidth then
-                suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
-            end
-            break
-        end
-        curWidth = curWidth + chunkWidth
-    end
-    table.insert(newVirtText, {suffix, 'MoreMsg'})
-    return newVirtText
+	local newVirtText = {}
+	local suffix = (' 󰁂 %d '):format(endLnum - lnum)
+	local sufWidth = vim.fn.strdisplaywidth(suffix)
+	local targetWidth = width - sufWidth
+	local curWidth = 0
+	for _, chunk in ipairs(virtText) do
+		local chunkText = chunk[1]
+		local chunkWidth = vim.fn.strdisplaywidth(chunkText)
+		if targetWidth > curWidth + chunkWidth then
+			table.insert(newVirtText, chunk)
+		else
+			chunkText = truncate(chunkText, targetWidth - curWidth)
+			local hlGroup = chunk[2]
+			table.insert(newVirtText, { chunkText, hlGroup })
+			chunkWidth = vim.fn.strdisplaywidth(chunkText)
+			if curWidth + chunkWidth < targetWidth then
+				suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
+			end
+			break
+		end
+		curWidth = curWidth + chunkWidth
+	end
+	table.insert(newVirtText, { suffix, 'MoreMsg' })
+	return newVirtText
 end
 
 require('ufo').setup({
-    fold_virt_text_handler = handler
+	fold_virt_text_handler = handler
 })
 
 
@@ -447,24 +447,23 @@ require('ufo').setup({
 local builtin = require('statuscol.builtin')
 
 require('statuscol').setup({
-  setopt = true,
-  segments = {
-    { 
-      text = { builtin.foldfunc } 
-    },
-    { 
-      text = { '%s' } 
-    },
-    {
-      text = { builtin.lnumfunc, ' ' },
-      condition = { true, builtin.not_empty },
-    },
-  },
+	setopt = true,
+	segments = {
+		{
+			text = { builtin.foldfunc }
+		},
+		{
+			text = { '%s' }
+		},
+		{
+			text = { " %{v:lnum} %{v:relnum == 0 ? ' ' : v:relnum} " },
+		},
+	},
 })
 
 
 vim.opt.fillchars:append({
-    foldopen = "",
-    foldclose = "",
-    foldsep = " ",
+	foldopen = "",
+	foldclose = "",
+	foldsep = " ",
 })
