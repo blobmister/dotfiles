@@ -1,3 +1,5 @@
+_G.nvim_start_time = (vim.uv or vim.loop).hrtime()
+
 --Fix errors in lua.config
 vim.lsp.config('lua_ls', {
 	settings = {
@@ -60,7 +62,6 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-mini/mini.nvim" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
-	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
 	{ src = "https://github.com/saghen/blink.cmp",                           version = vim.version.range('^1') },
 	{ src = "https://github.com/saghen/blink.lib" },
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
@@ -113,6 +114,7 @@ vim.keymap.set('n', '<leader>pc', pack_clean)
 
 -- Dashboard setup
 
+
 local db = require('dashboard')
 
 local custom_header = {
@@ -130,6 +132,16 @@ local custom_header = {
 	"",
 	"",
 }
+
+local function get_plugin_count()
+	if _G.packer_plugins ~= nil then
+		return vim.tbl_count(_G.packer_plugins)
+	end
+	if vim.g.plugs ~= nil then
+		return vim.tbl_count(vim.g.plugs)
+	end
+	return "??"
+end
 
 db.setup({
 	theme = 'doom',
@@ -181,10 +193,30 @@ db.setup({
 				action = 'enew | setlocal buftype=nofile bufhidden=hide noswapfile'
 			},
 		},
-		footer = {},
+
+		footer = function()
+		local pack_path = vim.fn.stdpath("data") .. "/site/pack"
+		local start_plugins = vim.fn.glob(pack_path .. "/*/start/*", true, true)
+		local opt_plugins = vim.fn.glob(pack_path .. "/*/opt/*", true, true)
+		local total_plugins = #start_plugins + #opt_plugins
+		local ms_str = "??"
+		if _G.nvim_start_time then
+			local ms = ((vim.uv or vim.loop).hrtime() - _G.nvim_start_time) / 1000000
+			ms = math.floor(ms * 100 + 0.5) / 100
+			ms_str = tostring(ms)
+		end
+
+		return {
+			"",
+			"neovim loaded " .. total_plugins .. " plugins in " .. ms_str .. "ms"
+		}
+	end,
+
 		vertical_center = true,
 	}
 })
+
+
 
 -- Themes setup
 
@@ -217,26 +249,26 @@ require("lualine").setup({
 })
 
 require("lualine").setup({
-  options = { theme = 'auto' },
+	options = { theme = 'auto' },
 
-  winbar = {
-    lualine_x = {
-      {
-        'filename',
-        path = 3, 
-        shorting_target = 40,
-      }
-    }
-  },
+	winbar = {
+		lualine_x = {
+			{
+				'filename',
+				path = 3,
+				shorting_target = 40,
+			}
+		}
+	},
 
-  inactive_winbar = {
-    lualine_x = {
-      {
-        'filename',
-        path = 1,
-      }
-    }
-  }
+	inactive_winbar = {
+		lualine_x = {
+			{
+				'filename',
+				path = 1,
+			}
+		}
+	}
 })
 
 
@@ -457,20 +489,20 @@ require("blink.cmp").setup()
 -- Toggleterm setup
 
 require("toggleterm").setup({
-    float_opts = {
-        border = "curved",
-    },
+	float_opts = {
+		border = "curved",
+	},
 })
 vim.keymap.set("n", "<C-\\>", function()
-    vim.cmd("1ToggleTerm direction=float dir=" .. vim.fn.getcwd())
+	vim.cmd("1ToggleTerm direction=float dir=" .. vim.fn.getcwd())
 end, { desc = "Toggle floating terminal in CWD" })
 vim.keymap.set("t", "<C-\\>", "<cmd>1ToggleTerm<cr>", { desc = "Close Terminal 1" })
 
 vim.keymap.set("n", "<C-t>", function()
-    local file_dir = vim.fn.expand("%:p:h")
-    local buf_id = vim.api.nvim_get_current_buf()
-    local term_id = buf_id + 100 
-    vim.cmd(term_id .. "ToggleTerm direction=horizontal dir=" .. file_dir)
+	local file_dir = vim.fn.expand("%:p:h")
+	local buf_id = vim.api.nvim_get_current_buf()
+	local term_id = buf_id + 100
+	vim.cmd(term_id .. "ToggleTerm direction=horizontal dir=" .. file_dir)
 end, { desc = "Toggle unique terminal for this file" })
 
 -- In terminal mode, we don't need to calculate the ID.
@@ -710,14 +742,14 @@ vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>", { desc = "Quickfix: Close w
 -- indent lines
 
 require("ibl").setup {
-    exclude = {
-        filetypes = {
-            "dashboard",
-            "mason",
-            "help",
+	exclude = {
+		filetypes = {
+			"dashboard",
+			"mason",
+			"help",
 			"oil",
-        },
-    },
+		},
+	},
 
 	scope = {
 		enabled = true,
