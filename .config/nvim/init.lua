@@ -68,7 +68,6 @@ vim.pack.add({
 	{ src = "https://github.com/RRethy/base16-nvim" },
 	{ src = "https://github.com/acksld/nvim-neoclip.lua" },
 	{ src = "https://github.com/ibhagwan/fzf-lua" },
-	{ src = "https://github.com/xiyaowong/transparent.nvim" },
 	{ src = "https://github.com/stevearc/oil.nvim" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter",            version = 'main' },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" },
@@ -217,7 +216,7 @@ require("lualine").setup({
   options = { theme = 'auto' },
 
   winbar = {
-    lualine_c = {
+    lualine_x = {
       {
         'filename',
         path = 3, 
@@ -227,7 +226,7 @@ require("lualine").setup({
   },
 
   inactive_winbar = {
-    lualine_c = {
+    lualine_x = {
       {
         'filename',
         path = 1,
@@ -466,9 +465,14 @@ vim.keymap.set("t", "<C-\\>", "<cmd>1ToggleTerm<cr>", { desc = "Close Terminal 1
 
 vim.keymap.set("n", "<C-t>", function()
     local file_dir = vim.fn.expand("%:p:h")
-    vim.cmd("2ToggleTerm direction=horizontal dir=" .. file_dir)
-end, { desc = "Toggle horizontal terminal in file dir" })
-vim.keymap.set("t", "<C-t>", "<cmd>2ToggleTerm<cr>", { desc = "Close Terminal 2" })
+    local buf_id = vim.api.nvim_get_current_buf()
+    local term_id = buf_id + 100 
+    vim.cmd(term_id .. "ToggleTerm direction=horizontal dir=" .. file_dir)
+end, { desc = "Toggle unique terminal for this file" })
+
+-- In terminal mode, we don't need to calculate the ID.
+-- Calling ToggleTerm with no number just closes whatever terminal you are currently inside.
+vim.keymap.set("t", "<C-t>", "<cmd>ToggleTerm<cr>", { desc = "Close current terminal" })
 
 -- VimTex setup
 vim.g.vimtex_view_method = "zathura"
