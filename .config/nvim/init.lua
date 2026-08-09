@@ -43,6 +43,9 @@ vim.keymap.set('n', '<C-l>', '<C-w>l')
 vim.keymap.set('n', '<C-d>', '<C-d>zz')
 vim.keymap.set('n', '<C-b>', '<C-b>zz')
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+vim.keymap.set('n', '<CR>', 'van', { remap = true, desc = "init incremental selection" })
+vim.keymap.set('x', '<CR>', 'an', { remap = true, desc = "expand selection" })
+vim.keymap.set('x', '<bs>', 'in', { remap = true, desc = "shrink selection" })
 
 -- Resize windows with Ctrl + arrow keys
 vim.keymap.set('n', '<C-Up>', '<cmd>resize -2<cr>', { desc = 'Increase window height' })
@@ -76,6 +79,7 @@ vim.pack.add({
 	{ src = "https://github.com/luukvbaal/statuscol.nvim" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
 	{ src = "https://github.com/nvimdev/dashboard-nvim" },
+	{ src = "https://github.com/lukas-reineke/indent-blankline.nvim" },
 })
 
 -- Pack Clean
@@ -372,7 +376,6 @@ require("mini.pairs").setup()
 require("mini.icons").setup()
 require("mini.move").setup()
 require("mini.cursorword").setup()
-require("mini.indentscope").setup()
 
 local miniclue = require('mini.clue')
 miniclue.setup({
@@ -704,4 +707,25 @@ vim.keymap.set("n", "[q", "<cmd>cprev<CR>", { desc = "Quickfix: Previous item" }
 vim.keymap.set("n", "<leader>qo", "<cmd>copen<CR>", { desc = "Quickfix: Open window" })
 vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>", { desc = "Quickfix: Close window" })
 
+-- indent lines
 
+require("ibl").setup {
+    exclude = {
+        filetypes = {
+            "dashboard",
+            "mason",
+            "help",
+			"oil",
+        },
+    },
+
+	scope = {
+		enabled = true,
+		show_start = false,
+		show_end = false
+	}
+}
+
+-- Undo tree
+vim.cmd("packadd nvim.undotree")
+vim.keymap.set("n", "<leader>u", require("undotree").open)
