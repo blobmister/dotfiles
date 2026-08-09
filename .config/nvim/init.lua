@@ -76,7 +76,7 @@ vim.pack.add({
 	{ src = "https://github.com/kevinhwang91/nvim-ufo" },
 	{ src = "https://github.com/luukvbaal/statuscol.nvim" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
-	{ src = "https://github.com/nvimdev/dashboard-nvim" }
+	{ src = "https://github.com/nvimdev/dashboard-nvim" },
 })
 
 -- Pack Clean
@@ -113,15 +113,15 @@ vim.keymap.set('n', '<leader>pc', pack_clean)
 local db = require('dashboard')
 
 local custom_header = {
-	 [[                         ███                 ]],
-	 [[                        ░░░                  ]],
-	 [[ ████████   █████ █████ ████  █████████████  ]],
-	 [[░░███░░███ ░░███ ░░███ ░░███ ░░███░░███░░███ ]],
-	 [[ ░███ ░███  ░███  ░███  ░███  ░███ ░███ ░███ ]],
-	 [[ ░███ ░███  ░░███ ███   ░███  ░███ ░███ ░███ ]],
-	 [[ ████ █████  ░░█████    █████ █████░███ █████]],
-	 [[░░░░ ░░░░░    ░░░░░    ░░░░░ ░░░░░ ░░░ ░░░░░ ]],
-	 [[                                             ]],
+	[[                         ███                 ]],
+	[[                        ░░░                  ]],
+	[[ ████████   █████ █████ ████  █████████████  ]],
+	[[░░███░░███ ░░███ ░░███ ░░███ ░░███░░███░░███ ]],
+	[[ ░███ ░███  ░███  ░███  ░███  ░███ ░███ ░███ ]],
+	[[ ░███ ░███  ░░███ ███   ░███  ░███ ░███ ░███ ]],
+	[[ ████ █████  ░░█████    █████ █████░███ █████]],
+	[[░░░░ ░░░░░    ░░░░░    ░░░░░ ░░░░░ ░░░ ░░░░░ ]],
+	[[                                             ]],
 
 	os.date("%A, %d %B %Y  |  %H:%M"),
 	"",
@@ -208,9 +208,34 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 	end,
 })
 
+
 require("lualine").setup({
-	options = { theme = 'auto' }
+	options = { theme = 'auto' },
 })
+
+require("lualine").setup({
+  options = { theme = 'auto' },
+
+  winbar = {
+    lualine_c = {
+      {
+        'filename',
+        path = 3, 
+        shorting_target = 40,
+      }
+    }
+  },
+
+  inactive_winbar = {
+    lualine_c = {
+      {
+        'filename',
+        path = 1,
+      }
+    }
+  }
+})
+
 
 -- LSP config
 require("mason").setup()
@@ -426,14 +451,24 @@ vim.keymap.set('n', '<leader>fk', fzf.keymaps, { desc = "Fzf keymaps" })
 -- Blink setup
 require("blink.cmp").setup()
 
--- ToggleTerm setup
+
+-- Toggleterm setup
+
 require("toggleterm").setup({
-	direction = "float",
-	open_mapping = [[<C-\>]],
-	float_opts = {
-		border = "curved",
-	},
+    float_opts = {
+        border = "curved",
+    },
 })
+vim.keymap.set("n", "<C-\\>", function()
+    vim.cmd("1ToggleTerm direction=float dir=" .. vim.fn.getcwd())
+end, { desc = "Toggle floating terminal in CWD" })
+vim.keymap.set("t", "<C-\\>", "<cmd>1ToggleTerm<cr>", { desc = "Close Terminal 1" })
+
+vim.keymap.set("n", "<C-t>", function()
+    local file_dir = vim.fn.expand("%:p:h")
+    vim.cmd("2ToggleTerm direction=horizontal dir=" .. file_dir)
+end, { desc = "Toggle horizontal terminal in file dir" })
+vim.keymap.set("t", "<C-t>", "<cmd>2ToggleTerm<cr>", { desc = "Close Terminal 2" })
 
 -- VimTex setup
 vim.g.vimtex_view_method = "zathura"
@@ -664,3 +699,5 @@ vim.keymap.set("n", "]q", "<cmd>cnext<CR>", { desc = "Quickfix: Next item" })
 vim.keymap.set("n", "[q", "<cmd>cprev<CR>", { desc = "Quickfix: Previous item" })
 vim.keymap.set("n", "<leader>qo", "<cmd>copen<CR>", { desc = "Quickfix: Open window" })
 vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>", { desc = "Quickfix: Close window" })
+
+
