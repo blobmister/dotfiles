@@ -112,9 +112,6 @@ vim.keymap.set('n', '<leader>pc', pack_clean)
 
 local db = require('dashboard')
 
-local db = require('dashboard')
-
--- 1. Create your custom header
 local custom_header = {
 	 [[                         ███                 ]],
 	 [[                        ░░░                  ]],
@@ -171,7 +168,7 @@ db.setup({
 				desc_hl = 'String',
 				key = 'd',
 				key_hl = 'Number',
-				action = "lua require('fzf-lua').files({ cwd = '~/.config/nvim' })"
+				action = "lua require('fzf-lua').files({ cwd = '~/.config' })"
 			},
 			{
 				desc = 'Scratch Buffer',
@@ -411,7 +408,7 @@ vim.keymap.set('n', '<leader>fh', fzf.help_tags, { desc = 'Fzf help tags' })
 vim.keymap.set('n', '<leader>ft', fzf.colorschemes, { desc = 'Fzf find themes' })
 vim.keymap.set('n', '<leader>fd', fzf.diagnostics_workspace, { desc = 'Fzf diagnostics' })
 vim.keymap.set('n', '<leader>fc', function()
-		fzf.files { cwd = vim.fn.stdpath("config") }
+		fzf.files { cwd = vim.fn.expand("~/.config") }
 	end,
 	{ desc = 'Fzf files in nvim directory' })
 vim.keymap.set('n', '<leader>fg', fzf.live_grep, { desc = 'Fzf live grep' })
