@@ -13,13 +13,18 @@ fi
 selected_name=$(basename "$selected" | tr . _)
 tmux_running=$(pgrep tmux)
 
+
 if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -s $selected_name -c $selected
+    tmux new-session -ds $selected_name -c $selected
+    tmux send-keys -t $selected_name "nvim" C-m
+    tmux attach-session -t $selected_name
     exit 0
 fi
 
+
 if ! tmux has-session -t=$selected_name 2> /dev/null; then
     tmux new-session -ds $selected_name -c $selected
+    tmux send-keys -t $selected_name "nvim" C-m
 fi
 
 if [[ -z $TMUX ]]; then

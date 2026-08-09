@@ -1,4 +1,4 @@
--- Fix errors in lua.config
+--Fix errors in lua.config
 vim.lsp.config('lua_ls', {
 	settings = {
 		Lua = {
@@ -35,7 +35,6 @@ vim.o.cursorline = true
 vim.o.cursorlineopt = "line,number"
 
 
-
 -- Default keymaps
 vim.keymap.set('n', '<C-h>', '<C-w>h')
 vim.keymap.set('n', '<C-j>', '<C-w>j')
@@ -59,7 +58,7 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
 	{ src = "https://github.com/nvim-tree/nvim-web-devicons" },
-	{ src = "https://github.com/saghen/blink.cmp" },
+	{ src = "https://github.com/saghen/blink.cmp",                           version = vim.version.range('^1') },
 	{ src = "https://github.com/saghen/blink.lib" },
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
@@ -76,7 +75,8 @@ vim.pack.add({
 	{ src = "https://github.com/kevinhwang91/promise-async" },
 	{ src = "https://github.com/kevinhwang91/nvim-ufo" },
 	{ src = "https://github.com/luukvbaal/statuscol.nvim" },
-	{ src = "https://github.com/lewis6991/gitsigns.nvim" }
+	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
+	{ src = "https://github.com/nvimdev/dashboard-nvim" }
 })
 
 -- Pack Clean
@@ -108,7 +108,85 @@ end
 
 vim.keymap.set('n', '<leader>pc', pack_clean)
 
--- -- Themes setup
+-- Dashboard setup
+
+local db = require('dashboard')
+
+local db = require('dashboard')
+
+-- 1. Create your custom header
+local custom_header = {
+	 [[                         ███                 ]],
+	 [[                        ░░░                  ]],
+	 [[ ████████   █████ █████ ████  █████████████  ]],
+	 [[░░███░░███ ░░███ ░░███ ░░███ ░░███░░███░░███ ]],
+	 [[ ░███ ░███  ░███  ░███  ░███  ░███ ░███ ░███ ]],
+	 [[ ░███ ░███  ░░███ ███   ░███  ░███ ░███ ░███ ]],
+	 [[ ████ █████  ░░█████    █████ █████░███ █████]],
+	 [[░░░░ ░░░░░    ░░░░░    ░░░░░ ░░░░░ ░░░ ░░░░░ ]],
+	 [[                                             ]],
+
+	os.date("%A, %d %B %Y  |  %I:%M %p"),
+	"",
+	"",
+}
+
+db.setup({
+	theme = 'doom',
+
+	config = {
+		header = custom_header,
+		center = {
+			{
+				desc = 'Find File',
+				desc_hl = 'String',
+				key = 'f',
+				key_hl = 'Number',
+				action = "lua require('fzf-lua').files()"
+			},
+			{
+				desc = 'Grep',
+				desc_hl = 'String',
+				key = 'g',
+				key_hl = 'Number',
+				action = "lua require('fzf-lua').live_grep()"
+
+			},
+			{
+				desc = 'Tmux Sessionizer',
+				desc_hl = 'String',
+				key = 's',
+				key_hl = 'Number',
+				action = 'TmuxSessionizer'
+			},
+			{
+				desc = 'Tmux Sessions',
+				desc_hl = 'String',
+				key = 'r',
+				key_hl = 'Number',
+				action = 'TmuxSwitchSession'
+			},
+			{
+				desc = 'Open Dotfiles',
+				desc_hl = 'String',
+				key = 'd',
+				key_hl = 'Number',
+				action = "lua require('fzf-lua').files({ cwd = '~/.config/nvim' })"
+			},
+			{
+				desc = 'Scratch Buffer',
+				desc_hl = 'String',
+				key = 'n',
+				key_hl = 'Number',
+				action = 'enew | setlocal buftype=nofile bufhidden=hide noswapfile'
+			},
+		},
+		footer = {},
+		vertical_center = true,
+	}
+})
+
+-- Themes setup
 
 local theme_file = vim.fn.stdpath("data") .. "/current_theme.txt"
 local f = io.open(theme_file, "r")
@@ -142,7 +220,7 @@ require("mason").setup()
 local capabilities = require('blink.cmp').get_lsp_capabilities()
 require("mason-lspconfig").setup({
 	automatic_enable = true,
-	handlers = {
+	handleprs = {
 		function(server_name)
 			require("lspconfig")[server_name].setup({
 				capabilities = capabilities
@@ -251,11 +329,11 @@ vim.keymap.set({ "n", "x", "o" }, "[i", function()
 	require("nvim-treesitter-textobjects.move").goto_previous_start("@conditional.outer", "locals")
 end, { desc = "treesitter goto prev conditional" })
 vim.keymap.set({ "n", "x", "o" }, "]/", function()
-    require("nvim-treesitter-textobjects.move").goto_next_start("@comment.outer", "textobjects")
+	require("nvim-treesitter-textobjects.move").goto_next_start("@comment.outer", "textobjects")
 end, { desc = "treesitter goto next comment" })
 
 vim.keymap.set({ "n", "x", "o" }, "[/", function()
-    require("nvim-treesitter-textobjects.move").goto_previous_start("@comment.outer", "textobjects")
+	require("nvim-treesitter-textobjects.move").goto_previous_start("@comment.outer", "textobjects")
 end, { desc = "treesitter goto prev comment" })
 
 local ts_repeat_move = require "nvim-treesitter-textobjects.repeatable_move"
@@ -377,11 +455,10 @@ vim.g.termdebug_wide = 1
 
 -- TMUX sessionizer in fzf-lua
 
-vim.keymap.set('n', '<leader>ts', function()
+vim.api.nvim_create_user_command('TmuxSessionizer', function()
 	local cmd = "fd --type d --hidden --exclude .git"
-
 	require('fzf-lua').fzf_exec(cmd, {
-		prompt = "Tmux Session> ",
+		prompt = "Tmux Sessionizer> ",
 		cwd = vim.env.HOME,
 		actions = {
 			["default"] = function(selected)
@@ -397,7 +474,25 @@ vim.keymap.set('n', '<leader>ts', function()
 			end
 		}
 	})
-end, { desc = "Fuzzy find directory to create/switch Tmux session" })
+end, {})
+
+vim.api.nvim_create_user_command('TmuxSwitchSession', function()
+	local cmd = "tmux list-sessions -F '#{session_name}'"
+	require('fzf-lua').fzf_exec(cmd, {
+		prompt = "Switch Tmux Session> ",
+		actions = {
+			["default"] = function(selected)
+				if not selected or #selected == 0 then return end
+				local session_name = selected[1]
+				vim.fn.system("tmux switch-client -t " .. vim.fn.shellescape(session_name))
+			end
+		}
+	})
+end, {})
+
+
+vim.keymap.set('n', '<leader>ts', ':TmuxSessionizer<CR>', { desc = 'Tmux Sessionizer' })
+vim.keymap.set('n', '<leader>tr', ':TmuxSwitchSession<CR>', { desc = 'Switch Tmux Session' })
 
 -- Better fold support
 vim.o.foldcolumn = '1'
@@ -454,42 +549,42 @@ vim.opt.relativenumber = true
 
 local builtin = require("statuscol.builtin")
 require('statuscol').setup({
-  setopt = true,
-  segments = {
-    { text = { builtin.foldfunc } },
-    { text = { '%s' } },
-    {
-      text = { builtin.lnumfunc, ' ' },
-      condition = { true, builtin.not_empty },
-    },
-  },
+	setopt = true,
+	segments = {
+		{ text = { builtin.foldfunc } },
+		{ text = { '%s' } },
+		{
+			text = { builtin.lnumfunc, ' ' },
+			condition = { true, builtin.not_empty },
+		},
+	},
 })
 
 local augroup = vim.api.nvim_create_augroup("numbertoggle", { clear = true })
 
 vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave", "CmdlineLeave", "WinEnter" }, {
-   pattern = "*",
-   group = augroup,
-   callback = function()
-      if vim.o.nu and vim.api.nvim_get_mode().mode ~= "i" then
-         vim.opt.relativenumber = true
-      end
-   end,
+	pattern = "*",
+	group = augroup,
+	callback = function()
+		if vim.o.nu and vim.api.nvim_get_mode().mode ~= "i" then
+			vim.opt.relativenumber = true
+		end
+	end,
 })
 
 vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter", "CmdlineEnter", "WinLeave" }, {
-   pattern = "*",
-   group = augroup,
-   callback = function()
-      if vim.o.nu then
-         vim.opt.relativenumber = false
+	pattern = "*",
+	group = augroup,
+	callback = function()
+		if vim.o.nu then
+			vim.opt.relativenumber = false
 
-         -- Workaround for https://github.com/neovim/neovim/issues/32068
-         if not vim.tbl_contains({"@", "-"}, vim.v.event.cmdtype) then
-            vim.cmd "redraw"
-         end
-      end
-   end,
+			-- Workaround for https://github.com/neovim/neovim/issues/32068
+			if not vim.tbl_contains({ "@", "-" }, vim.v.event.cmdtype) then
+				vim.cmd "redraw"
+			end
+		end
+	end,
 })
 
 vim.opt.fillchars:append({
@@ -499,70 +594,71 @@ vim.opt.fillchars:append({
 })
 
 -- Git Integration
-require('gitsigns').setup{
-  on_attach = function(bufnr)
-    local gitsigns = require('gitsigns')
+require('gitsigns').setup {
+	on_attach = function(bufnr)
+		local gitsigns = require('gitsigns')
 
-    local function map(mode, l, r, opts)
-      opts = opts or {}
-      opts.buffer = bufnr
-      vim.keymap.set(mode, l, r, opts)
-    end
+		local function map(mode, l, r, opts)
+			opts = opts or {}
+			opts.buffer = bufnr
+			vim.keymap.set(mode, l, r, opts)
+		end
 
-    -- Navigation
-    map('n', ']c', function()
-      if vim.wo.diff then
-        vim.cmd.normal({']c', bang = true})
-      else
-        gitsigns.nav_hunk('next')
-      end
-    end, { desc = "Git: Jump to next hunk" })
+		-- Navigation
+		map('n', ']c', function()
+			if vim.wo.diff then
+				vim.cmd.normal({ ']c', bang = true })
+			else
+				gitsigns.nav_hunk('next')
+			end
+		end, { desc = "Git: Jump to next hunk" })
 
-    map('n', '[c', function()
-      if vim.wo.diff then
-        vim.cmd.normal({'[c', bang = true})
-      else
-        gitsigns.nav_hunk('prev')
-      end
-    end, { desc = "Git: Jump to previous hunk" })
+		map('n', '[c', function()
+			if vim.wo.diff then
+				vim.cmd.normal({ '[c', bang = true })
+			else
+				gitsigns.nav_hunk('prev')
+			end
+		end, { desc = "Git: Jump to previous hunk" })
 
-    -- Actions
-    map('n', '<leader>hs', gitsigns.stage_hunk, { desc = "Git: Stage hunk" })
-    map('n', '<leader>hr', gitsigns.reset_hunk, { desc = "Git: Reset hunk" })
+		-- Actions
+		map('n', '<leader>hs', gitsigns.stage_hunk, { desc = "Git: Stage hunk" })
+		map('n', '<leader>hr', gitsigns.reset_hunk, { desc = "Git: Reset hunk" })
 
-    map('v', '<leader>hs', function()
-      gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
-    end, { desc = "Git: Stage selected lines" })
+		map('v', '<leader>hs', function()
+			gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+		end, { desc = "Git: Stage selected lines" })
 
-    map('v', '<leader>hr', function()
-      gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })
-    end, { desc = "Git: Reset selected lines" })
+		map('v', '<leader>hr', function()
+			gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+		end, { desc = "Git: Reset selected lines" })
 
-    map('n', '<leader>hS', gitsigns.stage_buffer, { desc = "Git: Stage entire buffer" })
-    map('n', '<leader>hR', gitsigns.reset_buffer, { desc = "Git: Reset entire buffer" })
-    map('n', '<leader>hp', gitsigns.preview_hunk, { desc = "Git: Preview hunk in float" })
-    map('n', '<leader>hi', gitsigns.preview_hunk_inline, { desc = "Git: Preview hunk inline" })
+		map('n', '<leader>hS', gitsigns.stage_buffer, { desc = "Git: Stage entire buffer" })
+		map('n', '<leader>hR', gitsigns.reset_buffer, { desc = "Git: Reset entire buffer" })
+		map('n', '<leader>hp', gitsigns.preview_hunk, { desc = "Git: Preview hunk in float" })
+		map('n', '<leader>hi', gitsigns.preview_hunk_inline, { desc = "Git: Preview hunk inline" })
 
-    map('n', '<leader>hb', function()
-      gitsigns.blame_line({ full = true })
-    end, { desc = "Git: Show full line blame" })
+		map('n', '<leader>hb', function()
+			gitsigns.blame_line({ full = true })
+		end, { desc = "Git: Show full line blame" })
 
-    map('n', '<leader>hd', gitsigns.diffthis, { desc = "Git: Diff against index" })
+		map('n', '<leader>hd', gitsigns.diffthis, { desc = "Git: Diff against index" })
 
-    map('n', '<leader>hD', function()
-      gitsigns.diffthis('~')
-    end, { desc = "Git: Diff against last commit" })
+		map('n', '<leader>hD', function()
+			gitsigns.diffthis('~')
+		end, { desc = "Git: Diff against last commit" })
 
-    map('n', '<leader>hQ', function() gitsigns.setqflist('all') end, { desc = "Git: Send all project hunks to quickfix" })
-    map('n', '<leader>hq', gitsigns.setqflist, { desc = "Git: Send buffer hunks to quickfix" })
+		map('n', '<leader>hQ', function() gitsigns.setqflist('all') end,
+			{ desc = "Git: Send all project hunks to quickfix" })
+		map('n', '<leader>hq', gitsigns.setqflist, { desc = "Git: Send buffer hunks to quickfix" })
 
-    -- Toggles
-    map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = "Git: Toggle inline blame text" })
-    map('n', '<leader>tw', gitsigns.toggle_word_diff, { desc = "Git: Toggle word-level diff" })
+		-- Toggles
+		map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = "Git: Toggle inline blame text" })
+		map('n', '<leader>tw', gitsigns.toggle_word_diff, { desc = "Git: Toggle word-level diff" })
 
-    -- Text object
-    map({'o', 'x'}, 'ih', gitsigns.select_hunk, { desc = "Git: Select inner hunk" })
-  end
+		-- Text object
+		map({ 'o', 'x' }, 'ih', gitsigns.select_hunk, { desc = "Git: Select inner hunk" })
+	end
 }
 
 
