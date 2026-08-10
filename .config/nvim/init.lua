@@ -1,11 +1,11 @@
 _G.nvim_start_time = (vim.uv or vim.loop).hrtime()
 
 --Fix errors in lua.config
-vim.lsp.config('lua_ls', {
+vim.lsp.config("lua_ls", {
 	settings = {
 		Lua = {
-			runtime = { version = 'LuaJIT' },
-			diagnostics = { globals = { 'vim' } },
+			runtime = { version = "LuaJIT" },
+			diagnostics = { globals = { "vim" } },
 			workspace = {
 				checkThirdParty = false,
 				library = {
@@ -27,7 +27,7 @@ vim.o.shiftwidth = 4
 vim.o.signcolumn = "yes"
 vim.o.winborder = "rounded"
 vim.o.clipboard = "unnamedplus"
-vim.o.mouse = 'a'
+vim.o.mouse = "a"
 vim.o.undofile = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -36,24 +36,23 @@ vim.o.autoread = true
 vim.o.cursorline = true
 vim.o.cursorlineopt = "line,number"
 
-
 -- Default keymaps
-vim.keymap.set('n', '<C-h>', '<C-w>h')
-vim.keymap.set('n', '<C-j>', '<C-w>j')
-vim.keymap.set('n', '<C-k>', '<C-w>k')
-vim.keymap.set('n', '<C-l>', '<C-w>l')
-vim.keymap.set('n', '<C-d>', '<C-d>zz')
-vim.keymap.set('n', '<C-b>', '<C-b>zz')
-vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-vim.keymap.set('n', '<CR>', 'van', { remap = true, desc = "init incremental selection" })
-vim.keymap.set('x', '<CR>', 'an', { remap = true, desc = "expand selection" })
-vim.keymap.set('x', '<bs>', 'in', { remap = true, desc = "shrink selection" })
+vim.keymap.set("n", "<C-h>", "<C-w>h")
+vim.keymap.set("n", "<C-j>", "<C-w>j")
+vim.keymap.set("n", "<C-k>", "<C-w>k")
+vim.keymap.set("n", "<C-l>", "<C-w>l")
+vim.keymap.set("n", "<C-d>", "<C-d>zz")
+vim.keymap.set("n", "<C-b>", "<C-b>zz")
+vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
+vim.keymap.set("n", "<CR>", "van", { remap = true, desc = "init incremental selection" })
+vim.keymap.set("x", "<CR>", "an", { remap = true, desc = "expand selection" })
+vim.keymap.set("x", "<bs>", "in", { remap = true, desc = "shrink selection" })
 
 -- Resize windows with Ctrl + arrow keys
-vim.keymap.set('n', '<C-Up>', '<cmd>resize -2<cr>', { desc = 'Increase window height' })
-vim.keymap.set('n', '<C-Down>', '<cmd>resize +2<cr>', { desc = 'Decrease window height' })
-vim.keymap.set('n', '<C-Left>', '<cmd>vertical resize +2<cr>', { desc = 'Decrease window width' })
-vim.keymap.set('n', '<C-Right>', '<cmd>vertical resize -2<cr>', { desc = 'Increase window width' })
+vim.keymap.set("n", "<C-Up>", "<cmd>resize -2<cr>", { desc = "Increase window height" })
+vim.keymap.set("n", "<C-Down>", "<cmd>resize +2<cr>", { desc = "Decrease window height" })
+vim.keymap.set("n", "<C-Left>", "<cmd>vertical resize +2<cr>", { desc = "Decrease window width" })
+vim.keymap.set("n", "<C-Right>", "<cmd>vertical resize -2<cr>", { desc = "Increase window width" })
 
 -- Load in all plugins
 
@@ -62,7 +61,7 @@ vim.pack.add({
 	{ src = "https://github.com/nvim-mini/mini.nvim" },
 	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
-	{ src = "https://github.com/saghen/blink.cmp",                           version = vim.version.range('^1') },
+	{ src = "https://github.com/saghen/blink.cmp", version = vim.version.range("^1") },
 	{ src = "https://github.com/saghen/blink.lib" },
 	{ src = "https://github.com/akinsho/toggleterm.nvim" },
 	{ src = "https://github.com/mason-org/mason.nvim" },
@@ -73,7 +72,7 @@ vim.pack.add({
 	{ src = "https://github.com/acksld/nvim-neoclip.lua" },
 	{ src = "https://github.com/ibhagwan/fzf-lua" },
 	{ src = "https://github.com/stevearc/oil.nvim" },
-	{ src = "https://github.com/nvim-treesitter/nvim-treesitter",            version = 'main' },
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" },
 	{ src = "https://github.com/kevinhwang91/promise-async" },
 	{ src = "https://github.com/kevinhwang91/nvim-ufo" },
@@ -81,6 +80,8 @@ vim.pack.add({
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
 	{ src = "https://github.com/nvimdev/dashboard-nvim" },
 	{ src = "https://github.com/lukas-reineke/indent-blankline.nvim" },
+	{ src = "https://github.com/tpope/vim-fugitive" },
+	{ src = "https://github.com/stevearc/conform.nvim" },
 })
 
 -- Pack Clean
@@ -110,12 +111,11 @@ local function pack_clean()
 	end
 end
 
-vim.keymap.set('n', '<leader>pc', pack_clean)
+vim.keymap.set("n", "<leader>pc", pack_clean)
 
 -- Dashboard setup
 
-
-local db = require('dashboard')
+local db = require("dashboard")
 
 local custom_header = {
 	[[                         ███                 ]],
@@ -144,79 +144,76 @@ local function get_plugin_count()
 end
 
 db.setup({
-	theme = 'doom',
+	theme = "doom",
 
 	config = {
 		header = custom_header,
 		center = {
 			{
-				desc = 'Find File',
-				desc_hl = 'String',
-				key = 'f',
-				key_hl = 'Number',
-				action = "lua require('fzf-lua').files()"
+				desc = "Find File",
+				desc_hl = "String",
+				key = "f",
+				key_hl = "Number",
+				action = "lua require('fzf-lua').files()",
 			},
 			{
-				desc = 'Grep',
-				desc_hl = 'String',
-				key = 'g',
-				key_hl = 'Number',
-				action = "lua require('fzf-lua').live_grep()"
-
+				desc = "Grep",
+				desc_hl = "String",
+				key = "g",
+				key_hl = "Number",
+				action = "lua require('fzf-lua').live_grep()",
 			},
 			{
-				desc = 'Tmux Sessionizer',
-				desc_hl = 'String',
-				key = 's',
-				key_hl = 'Number',
-				action = 'TmuxSessionizer'
+				desc = "Tmux Sessionizer",
+				desc_hl = "String",
+				key = "s",
+				key_hl = "Number",
+				action = "TmuxSessionizer",
 			},
 			{
-				desc = 'Tmux Sessions',
-				desc_hl = 'String',
-				key = 'r',
-				key_hl = 'Number',
-				action = 'TmuxSwitchSession'
+				desc = "Tmux Sessions",
+				desc_hl = "String",
+				key = "r",
+				key_hl = "Number",
+				action = "TmuxSwitchSession",
 			},
 			{
-				desc = 'Open Dotfiles',
-				desc_hl = 'String',
-				key = 'd',
-				key_hl = 'Number',
-				action = "lua require('fzf-lua').files({ cwd = '~/.config' })"
+				desc = "Open Dotfiles",
+				desc_hl = "String",
+				key = "d",
+				key_hl = "Number",
+				action = "lua require('fzf-lua').files({ cwd = '~/.config' })",
 			},
 			{
-				desc = 'Scratch Buffer',
-				desc_hl = 'String',
-				key = 'n',
-				key_hl = 'Number',
-				action = 'enew | setlocal buftype=nofile bufhidden=hide noswapfile'
+				desc = "Scratch Buffer",
+				desc_hl = "String",
+				key = "n",
+				key_hl = "Number",
+				action = "enew | setlocal buftype=nofile bufhidden=hide noswapfile",
 			},
 		},
 
 		footer = function()
-		local pack_path = vim.fn.stdpath("data") .. "/site/pack"
-		local start_plugins = vim.fn.glob(pack_path .. "/*/start/*", true, true)
-		local opt_plugins = vim.fn.glob(pack_path .. "/*/opt/*", true, true)
-		local total_plugins = #start_plugins + #opt_plugins
-		local ms_str = "??"
-		if _G.nvim_start_time then
-			local ms = ((vim.uv or vim.loop).hrtime() - _G.nvim_start_time) / 1000000
-			ms = math.floor(ms * 100 + 0.5) / 100
-			ms_str = tostring(ms)
-		end
+			local pack_path = vim.fn.stdpath("data") .. "/site/pack"
+			local start_plugins = vim.fn.glob(pack_path .. "/*/start/*", true, true)
+			local opt_plugins = vim.fn.glob(pack_path .. "/*/opt/*", true, true)
+			local total_plugins = #start_plugins + #opt_plugins
+			local ms_str = "??"
+			if _G.nvim_start_time then
+				local ms = ((vim.uv or vim.loop).hrtime() - _G.nvim_start_time) / 1000000
+				ms = math.floor(ms * 100 + 0.5) / 100
+				ms_str = tostring(ms)
+			end
 
-		return {
-			"",
-			"neovim loaded " .. total_plugins .. " plugins in " .. ms_str .. "ms"
-		}
-	end,
+			return {
+				"",
+				"neovim loaded " .. total_plugins .. " plugins in " .. ms_str .. "ms",
+			}
+		end,
 
 		vertical_center = true,
-	}
+	},
 })
-
-
 
 -- Themes setup
 
@@ -243,61 +240,58 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 	end,
 })
 
-
 require("lualine").setup({
-	options = { theme = 'auto' },
+	options = { theme = "auto" },
 })
 
 require("lualine").setup({
-	options = { theme = 'auto' },
+	options = { theme = "auto" },
 
 	winbar = {
 		lualine_x = {
 			{
-				'filename',
+				"filename",
 				path = 3,
 				shorting_target = 40,
-			}
-		}
+			},
+		},
 	},
 
 	inactive_winbar = {
 		lualine_x = {
 			{
-				'filename',
+				"filename",
 				path = 1,
-			}
-		}
-	}
+			},
+		},
+	},
 })
 
-
--- LSP config
+--LSP config
 require("mason").setup()
-local capabilities = require('blink.cmp').get_lsp_capabilities()
+local capabilities = require("blink.cmp").get_lsp_capabilities()
 require("mason-lspconfig").setup({
 	automatic_enable = true,
 	handleprs = {
 		function(server_name)
 			require("lspconfig")[server_name].setup({
-				capabilities = capabilities
+				capabilities = capabilities,
 			})
 		end,
-	}
+	},
 })
 
-vim.keymap.set("n", "<leader>lf", vim.lsp.buf.format)
 vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename)
 vim.keymap.set("n", "<leader>k", vim.lsp.buf.hover)
 vim.keymap.set("n", "gd", vim.lsp.buf.definition)
 
 -- Treesitter
-require('nvim-treesitter').setup()
+require("nvim-treesitter").setup()
 
 -- Treesitter highlighting
 
-vim.api.nvim_create_autocmd('FileType', {
-	pattern = '*',
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "*",
 	callback = function(args)
 		if pcall(vim.treesitter.start, args.buf) then
 			vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
@@ -307,50 +301,50 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- Treesitter Textobjects config
 
-require("nvim-treesitter-textobjects").setup {
+require("nvim-treesitter-textobjects").setup({
 	select = {
-		lookahead = true
+		lookahead = true,
 	},
 	move = {
 		set_jumps = true,
 	},
-}
+})
 
 vim.keymap.set({ "x", "o" }, "am", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@function.outer", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@function.outer", "textobjects")
 end, { desc = "treesitter around method/function" })
 vim.keymap.set({ "x", "o" }, "im", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@function.inner", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@function.inner", "textobjects")
 end, { desc = "treesitter inner method/function" })
-vim.keymap.set({ "x", "o" }, "ac", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@class.outer", "textobjects")
+vim.keymap.set({ "x", "o" }, "as", function()
+	require("nvim-treesitter-textobjects.select").select_textobject("@class.outer", "textobjects")
 end, { desc = "treesitter around class" })
-vim.keymap.set({ "x", "o" }, "ic", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@class.inner", "textobjects")
+vim.keymap.set({ "x", "o" }, "is", function()
+	require("nvim-treesitter-textobjects.select").select_textobject("@class.inner", "textobjects")
 end, { desc = "treesitter inner class" })
 vim.keymap.set({ "x", "o" }, "ik", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@block.inner", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@block.inner", "textobjects")
 end, { desc = "treesitter block inner" })
 vim.keymap.set({ "x", "o" }, "ak", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@block.outer", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@block.outer", "textobjects")
 end, { desc = "treesitter block outer" })
 vim.keymap.set({ "x", "o" }, "al", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@loop.outer", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@loop.outer", "textobjects")
 end, { desc = "treesitter loop outer" })
 vim.keymap.set({ "x", "o" }, "il", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@loop.inner", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@loop.inner", "textobjects")
 end, { desc = "treesitter loop inner" })
 vim.keymap.set({ "x", "o" }, "ai", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@conditional.outer", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@conditional.outer", "textobjects")
 end, { desc = "treesitter conditional outer" })
 vim.keymap.set({ "x", "o" }, "ii", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@conditional.inner", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@conditional.inner", "textobjects")
 end, { desc = "treesitter conditional inner" })
 vim.keymap.set({ "x", "o" }, "i/", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@comment.inner", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@comment.inner", "textobjects")
 end, { desc = "treesitter comment inner" })
 vim.keymap.set({ "x", "o" }, "a/", function()
-	require "nvim-treesitter-textobjects.select".select_textobject("@comment.outer", "textobjects")
+	require("nvim-treesitter-textobjects.select").select_textobject("@comment.outer", "textobjects")
 end, { desc = "treesitter comment outer" })
 
 -- Movement
@@ -367,13 +361,13 @@ end, { desc = "treesitter goto next block" })
 vim.keymap.set({ "n", "x", "o" }, "]i", function()
 	require("nvim-treesitter-textobjects.move").goto_next_start("@conditional.outer", "locals")
 end, { desc = "treesitter goto next conditional" })
-vim.keymap.set({ "n", "x", "o" }, "]c", function()
+vim.keymap.set({ "n", "x", "o" }, "]s", function()
 	require("nvim-treesitter-textobjects.move").goto_next_end("@class.outer", "textobjects")
 end, { desc = "treesiter goto next class" })
 vim.keymap.set({ "n", "x", "o" }, "[m", function()
 	require("nvim-treesitter-textobjects.move").goto_previous_start("@function.outer", "textobjects")
 end, { desc = "treesitter goto prev function" })
-vim.keymap.set({ "n", "x", "o" }, "[c", function()
+vim.keymap.set({ "n", "x", "o" }, "[x", function()
 	require("nvim-treesitter-textobjects.move").goto_previous_start("@class.outer", "textobjects")
 end, { desc = "treesiter goto prev class" })
 vim.keymap.set({ "n", "x", "o" }, "[l", function()
@@ -393,7 +387,7 @@ vim.keymap.set({ "n", "x", "o" }, "[/", function()
 	require("nvim-treesitter-textobjects.move").goto_previous_start("@comment.outer", "textobjects")
 end, { desc = "treesitter goto prev comment" })
 
-local ts_repeat_move = require "nvim-treesitter-textobjects.repeatable_move"
+local ts_repeat_move = require("nvim-treesitter-textobjects.repeatable_move")
 vim.keymap.set({ "n", "x", "o" }, ";", ts_repeat_move.repeat_last_move, { desc = "Repeat last move" })
 vim.keymap.set({ "n", "x", "o" }, ",", ts_repeat_move.repeat_last_move_opposite, { desc = "Undo last move" })
 vim.keymap.set({ "n", "x", "o" }, "f", ts_repeat_move.builtin_f_expr, { expr = true })
@@ -409,35 +403,35 @@ require("mini.icons").setup()
 require("mini.move").setup()
 require("mini.cursorword").setup()
 
-local miniclue = require('mini.clue')
+local miniclue = require("mini.clue")
 miniclue.setup({
 	triggers = {
 		-- Leader triggers
-		{ mode = { 'n', 'x' }, keys = '<Leader>' },
+		{ mode = { "n", "x" }, keys = "<Leader>" },
 
 		-- `[` and `]` keys
-		{ mode = 'n',          keys = '[' },
-		{ mode = 'n',          keys = ']' },
+		{ mode = "n", keys = "[" },
+		{ mode = "n", keys = "]" },
 
 		-- Built-in completion
-		{ mode = 'i',          keys = '<C-x>' },
+		{ mode = "i", keys = "<C-x>" },
 
 		-- `g` key
-		{ mode = { 'n', 'x' }, keys = 'g' },
+		{ mode = { "n", "x" }, keys = "g" },
 
 		-- Marks
-		{ mode = { 'n', 'x' }, keys = "'" },
-		{ mode = { 'n', 'x' }, keys = '`' },
+		{ mode = { "n", "x" }, keys = "'" },
+		{ mode = { "n", "x" }, keys = "`" },
 
 		-- Registers
-		{ mode = { 'n', 'x' }, keys = '"' },
-		{ mode = { 'i', 'c' }, keys = '<C-r>' },
+		{ mode = { "n", "x" }, keys = '"' },
+		{ mode = { "i", "c" }, keys = "<C-r>" },
 
 		-- Window commands
-		{ mode = 'n',          keys = '<C-w>' },
+		{ mode = "n", keys = "<C-w>" },
 
 		-- `z` key
-		{ mode = { 'n', 'x' }, keys = 'z' },
+		{ mode = { "n", "x" }, keys = "z" },
 	},
 
 	clues = {
@@ -454,37 +448,39 @@ miniclue.setup({
 
 -- Neoclip
 
-require('neoclip').setup()
+require("neoclip").setup()
 
 -- fzf Setup
 
 local fzf = require("fzf-lua")
 
-vim.keymap.set('n', '<leader>ff', function() fzf.files({ hidden = false }) end, { desc = 'Fzf files' })
-vim.keymap.set('n', '<leader>fa', function() fzf.files({ hidden = true }) end, { desc = 'Fzf hidden files' })
-vim.keymap.set('n', '<leader>fb', fzf.buffers, { desc = 'Fzf buffers' })
-vim.keymap.set('n', '<leader>fh', fzf.help_tags, { desc = 'Fzf help tags' })
-vim.keymap.set('n', '<leader>ft', fzf.colorschemes, { desc = 'Fzf find themes' })
-vim.keymap.set('n', '<leader>fd', fzf.diagnostics_workspace, { desc = 'Fzf diagnostics' })
-vim.keymap.set('n', '<leader>fc', function()
-		fzf.files { cwd = vim.fn.expand("~/.config") }
-	end,
-	{ desc = 'Fzf files in nvim directory' })
-vim.keymap.set('n', '<leader>fg', fzf.live_grep, { desc = 'Fzf live grep' })
-vim.keymap.set('n', '<leader>fw', fzf.grep_cword, { desc = 'Fzf grep word under cursor' })
-vim.keymap.set('v', '<leader>fw', fzf.grep_visual, { desc = 'Fzf grep visual selection' })
-vim.keymap.set('n', '<leader>lr', fzf.lsp_references, { desc = 'Fzf LSP references' })
-vim.keymap.set('n', '<leader>ld', fzf.lsp_definitions, { desc = 'Fzf LSP definitions' })
-vim.keymap.set('n', '<leader>ls', fzf.lsp_workspace_symbols, { desc = 'Fzf LSP workspace symbols' })
+vim.keymap.set("n", "<leader>ff", function()
+	fzf.files({ hidden = false })
+end, { desc = "Fzf files" })
+vim.keymap.set("n", "<leader>fa", function()
+	fzf.files({ hidden = true })
+end, { desc = "Fzf hidden files" })
+vim.keymap.set("n", "<leader>fb", fzf.buffers, { desc = "Fzf buffers" })
+vim.keymap.set("n", "<leader>fh", fzf.help_tags, { desc = "Fzf help tags" })
+vim.keymap.set("n", "<leader>ft", fzf.colorschemes, { desc = "Fzf find themes" })
+vim.keymap.set("n", "<leader>fd", fzf.diagnostics_workspace, { desc = "Fzf diagnostics" })
+vim.keymap.set("n", "<leader>fc", function()
+	fzf.files({ cwd = vim.fn.expand("~/.config") })
+end, { desc = "Fzf files in nvim directory" })
+vim.keymap.set("n", "<leader>fg", fzf.live_grep, { desc = "Fzf live grep" })
+vim.keymap.set("n", "<leader>fw", fzf.grep_cword, { desc = "Fzf grep word under cursor" })
+vim.keymap.set("v", "<leader>fw", fzf.grep_visual, { desc = "Fzf grep visual selection" })
+vim.keymap.set("n", "<leader>lr", fzf.lsp_references, { desc = "Fzf LSP references" })
+vim.keymap.set("n", "<leader>ld", fzf.lsp_definitions, { desc = "Fzf LSP definitions" })
+vim.keymap.set("n", "<leader>ls", fzf.lsp_workspace_symbols, { desc = "Fzf LSP workspace symbols" })
 vim.keymap.set("n", "<leader>ca", fzf.lsp_code_actions, { desc = "Fzf code actions" })
-vim.keymap.set('n', '<leader>fy', function()
-	require('neoclip.fzf')()
-end, { desc = 'Fzf clipboard/yank history' })
-vim.keymap.set('n', '<leader>fk', fzf.keymaps, { desc = "Fzf keymaps" })
+vim.keymap.set("n", "<leader>fy", function()
+	require("neoclip.fzf")()
+end, { desc = "Fzf clipboard/yank history" })
+vim.keymap.set("n", "<leader>fk", fzf.keymaps, { desc = "Fzf keymaps" })
 
 -- Blink setup
 require("blink.cmp").setup()
-
 
 -- Toggleterm setup
 
@@ -518,22 +514,22 @@ vim.g.vimtex_compiler_silent = 1
 require("oil").setup()
 vim.keymap.set("n", "-", "<CMD>Oil --float<CR>", { desc = "Open parent directory" })
 
-
-
 -- termdebug
 vim.cmd("packadd! termdebug")
 vim.g.termdebug_wide = 1
 
 -- TMUX sessionizer in fzf-lua
 
-vim.api.nvim_create_user_command('TmuxSessionizer', function()
+vim.api.nvim_create_user_command("TmuxSessionizer", function()
 	local cmd = "fd --type d --hidden --exclude .git"
-	require('fzf-lua').fzf_exec(cmd, {
+	require("fzf-lua").fzf_exec(cmd, {
 		prompt = "Tmux Sessionizer> ",
 		cwd = vim.env.HOME,
 		actions = {
 			["default"] = function(selected)
-				if not selected or #selected == 0 then return end
+				if not selected or #selected == 0 then
+					return
+				end
 
 				local selected_path = selected[1]:match("^%s*(.-)%s*$")
 				local full_path = vim.env.HOME .. "/" .. selected_path
@@ -542,43 +538,44 @@ vim.api.nvim_create_user_command('TmuxSessionizer', function()
 				vim.fn.system({ script_cmd, full_path })
 
 				vim.notify("Switching to session for: " .. selected_path, vim.log.levels.INFO)
-			end
-		}
+			end,
+		},
 	})
 end, {})
 
-vim.api.nvim_create_user_command('TmuxSwitchSession', function()
+vim.api.nvim_create_user_command("TmuxSwitchSession", function()
 	local cmd = "tmux list-sessions -F '#{session_name}'"
-	require('fzf-lua').fzf_exec(cmd, {
+	require("fzf-lua").fzf_exec(cmd, {
 		prompt = "Switch Tmux Session> ",
 		actions = {
 			["default"] = function(selected)
-				if not selected or #selected == 0 then return end
+				if not selected or #selected == 0 then
+					return
+				end
 				local session_name = selected[1]
 				vim.fn.system("tmux switch-client -t " .. vim.fn.shellescape(session_name))
-			end
-		}
+			end,
+		},
 	})
 end, {})
 
-
-vim.keymap.set('n', '<leader>ts', ':TmuxSessionizer<CR>', { desc = 'Tmux Sessionizer' })
-vim.keymap.set('n', '<leader>tr', ':TmuxSwitchSession<CR>', { desc = 'Switch Tmux Session' })
+vim.keymap.set("n", "<leader>ts", ":TmuxSessionizer<CR>", { desc = "Tmux Sessionizer" })
+vim.keymap.set("n", "<leader>tr", ":TmuxSwitchSession<CR>", { desc = "Switch Tmux Session" })
 
 -- Better fold support
-vim.o.foldcolumn = '1'
+vim.o.foldcolumn = "1"
 vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 vim.o.foldenable = true
 
-vim.keymap.set('n', 'zR', require('ufo').openAllFolds, { desc = "Open all fold expressions" })
-vim.keymap.set('n', 'zM', require('ufo').closeAllFolds, { desc = "Close all fold expressions" })
-vim.keymap.set('n', 'zr', require('ufo').openFoldsExceptKinds, { desc = "Fold less" })
-vim.keymap.set('n', 'zm', require('ufo').closeFoldsWith, { desc = "Fold more" })
+vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Open all fold expressions" })
+vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Close all fold expressions" })
+vim.keymap.set("n", "zr", require("ufo").openFoldsExceptKinds, { desc = "Fold less" })
+vim.keymap.set("n", "zm", require("ufo").closeFoldsWith, { desc = "Fold more" })
 
 local handler = function(virtText, lnum, endLnum, width, truncate)
 	local newVirtText = {}
-	local suffix = (' 󰁂 %d '):format(endLnum - lnum)
+	local suffix = (" 󰁂 %d "):format(endLnum - lnum)
 	local sufWidth = vim.fn.strdisplaywidth(suffix)
 	local targetWidth = width - sufWidth
 	local curWidth = 0
@@ -593,24 +590,26 @@ local handler = function(virtText, lnum, endLnum, width, truncate)
 			table.insert(newVirtText, { chunkText, hlGroup })
 			chunkWidth = vim.fn.strdisplaywidth(chunkText)
 			if curWidth + chunkWidth < targetWidth then
-				suffix = suffix .. (' '):rep(targetWidth - curWidth - chunkWidth)
+				suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
 			end
 			break
 		end
 		curWidth = curWidth + chunkWidth
 	end
-	table.insert(newVirtText, { suffix, 'MoreMsg' })
+	table.insert(newVirtText, { suffix, "MoreMsg" })
 	return newVirtText
 end
 
-require('ufo').setup({
-	fold_virt_text_handler = handler
+require("ufo").setup({
+	fold_virt_text_handler = handler,
 })
 
-
-require('ufo').setup({
+require("ufo").setup({
 	provider_selector = function(bufnr, filetype, buftype)
-		return { 'treesitter', 'indent' }
+		if buftype == "nofile" or buftype == "nowrite" then
+			return ""
+		end
+		return { "treesitter", "indent" }
 	end,
 })
 
@@ -619,13 +618,13 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 
 local builtin = require("statuscol.builtin")
-require('statuscol').setup({
+require("statuscol").setup({
 	setopt = true,
 	segments = {
 		{ text = { builtin.foldfunc } },
-		{ text = { '%s' } },
+		{ text = { "%s" } },
 		{
-			text = { builtin.lnumfunc, ' ' },
+			text = { builtin.lnumfunc, " " },
 			condition = { true, builtin.not_empty },
 		},
 	},
@@ -652,7 +651,7 @@ vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter", "CmdlineEn
 
 			-- Workaround for https://github.com/neovim/neovim/issues/32068
 			if not vim.tbl_contains({ "@", "-" }, vim.v.event.cmdtype) then
-				vim.cmd "redraw"
+				vim.cmd("redraw")
 			end
 		end
 	end,
@@ -665,9 +664,9 @@ vim.opt.fillchars:append({
 })
 
 -- Git Integration
-require('gitsigns').setup {
+require("gitsigns").setup({
 	on_attach = function(bufnr)
-		local gitsigns = require('gitsigns')
+		local gitsigns = require("gitsigns")
 
 		local function map(mode, l, r, opts)
 			opts = opts or {}
@@ -676,62 +675,62 @@ require('gitsigns').setup {
 		end
 
 		-- Navigation
-		map('n', ']c', function()
+		map("n", "]c", function()
 			if vim.wo.diff then
-				vim.cmd.normal({ ']c', bang = true })
+				vim.cmd.normal({ "]c", bang = true })
 			else
-				gitsigns.nav_hunk('next')
+				gitsigns.nav_hunk("next")
 			end
 		end, { desc = "Git: Jump to next hunk" })
 
-		map('n', '[c', function()
+		map("n", "[c", function()
 			if vim.wo.diff then
-				vim.cmd.normal({ '[c', bang = true })
+				vim.cmd.normal({ "[c", bang = true })
 			else
-				gitsigns.nav_hunk('prev')
+				gitsigns.nav_hunk("prev")
 			end
 		end, { desc = "Git: Jump to previous hunk" })
 
 		-- Actions
-		map('n', '<leader>hs', gitsigns.stage_hunk, { desc = "Git: Stage hunk" })
-		map('n', '<leader>hr', gitsigns.reset_hunk, { desc = "Git: Reset hunk" })
+		map("n", "<leader>hs", gitsigns.stage_hunk, { desc = "Git: Stage hunk" })
+		map("n", "<leader>hr", gitsigns.reset_hunk, { desc = "Git: Reset hunk" })
 
-		map('v', '<leader>hs', function()
-			gitsigns.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+		map("v", "<leader>hs", function()
+			gitsigns.stage_hunk({ vim.fn.line("."), vim.fn.line("v") })
 		end, { desc = "Git: Stage selected lines" })
 
-		map('v', '<leader>hr', function()
-			gitsigns.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') })
+		map("v", "<leader>hr", function()
+			gitsigns.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
 		end, { desc = "Git: Reset selected lines" })
 
-		map('n', '<leader>hS', gitsigns.stage_buffer, { desc = "Git: Stage entire buffer" })
-		map('n', '<leader>hR', gitsigns.reset_buffer, { desc = "Git: Reset entire buffer" })
-		map('n', '<leader>hp', gitsigns.preview_hunk, { desc = "Git: Preview hunk in float" })
-		map('n', '<leader>hi', gitsigns.preview_hunk_inline, { desc = "Git: Preview hunk inline" })
+		map("n", "<leader>hS", gitsigns.stage_buffer, { desc = "Git: Stage entire buffer" })
+		map("n", "<leader>hR", gitsigns.reset_buffer, { desc = "Git: Reset entire buffer" })
+		map("n", "<leader>hp", gitsigns.preview_hunk, { desc = "Git: Preview hunk in float" })
+		map("n", "<leader>hi", gitsigns.preview_hunk_inline, { desc = "Git: Preview hunk inline" })
 
-		map('n', '<leader>hb', function()
+		map("n", "<leader>hb", function()
 			gitsigns.blame_line({ full = true })
 		end, { desc = "Git: Show full line blame" })
 
-		map('n', '<leader>hd', gitsigns.diffthis, { desc = "Git: Diff against index" })
+		map("n", "<leader>hd", gitsigns.diffthis, { desc = "Git: Diff against index" })
 
-		map('n', '<leader>hD', function()
-			gitsigns.diffthis('~')
+		map("n", "<leader>hD", function()
+			gitsigns.diffthis("~")
 		end, { desc = "Git: Diff against last commit" })
 
-		map('n', '<leader>hQ', function() gitsigns.setqflist('all') end,
-			{ desc = "Git: Send all project hunks to quickfix" })
-		map('n', '<leader>hq', gitsigns.setqflist, { desc = "Git: Send buffer hunks to quickfix" })
+		map("n", "<leader>hQ", function()
+			gitsigns.setqflist("all")
+		end, { desc = "Git: Send all project hunks to quickfix" })
+		map("n", "<leader>hq", gitsigns.setqflist, { desc = "Git: Send buffer hunks to quickfix" })
 
 		-- Toggles
-		map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = "Git: Toggle inline blame text" })
-		map('n', '<leader>tw', gitsigns.toggle_word_diff, { desc = "Git: Toggle word-level diff" })
+		map("n", "<leader>tb", gitsigns.toggle_current_line_blame, { desc = "Git: Toggle inline blame text" })
+		map("n", "<leader>tw", gitsigns.toggle_word_diff, { desc = "Git: Toggle word-level diff" })
 
 		-- Text object
-		map({ 'o', 'x' }, 'ih', gitsigns.select_hunk, { desc = "Git: Select inner hunk" })
-	end
-}
-
+		map({ "o", "x" }, "ih", gitsigns.select_hunk, { desc = "Git: Select inner hunk" })
+	end,
+})
 
 -- quickfix keybinds
 vim.keymap.set("n", "]q", "<cmd>cnext<CR>", { desc = "Quickfix: Next item" })
@@ -741,7 +740,7 @@ vim.keymap.set("n", "<leader>qc", "<cmd>cclose<CR>", { desc = "Quickfix: Close w
 
 -- indent lines
 
-require("ibl").setup {
+require("ibl").setup({
 	exclude = {
 		filetypes = {
 			"dashboard",
@@ -754,10 +753,34 @@ require("ibl").setup {
 	scope = {
 		enabled = true,
 		show_start = false,
-		show_end = false
-	}
-}
+		show_end = false,
+	},
+})
 
 -- Undo tree
 vim.cmd("packadd nvim.undotree")
 vim.keymap.set("n", "<leader>u", require("undotree").open)
+
+-- Conform setup
+
+require("conform").setup({
+	formatters_by_ft = {
+		c = { "clang-format" },
+		cpp = { "clang-format" },
+		python = { "isort", "black" },
+		lua = { "stylua" },
+		sh = { "shfmt" },
+		bash = { "shfmt" },
+	},
+	format_on_save = {
+		timeout_ms = 500,
+		lsp_format = "fallback",
+	},
+})
+
+vim.keymap.set({ "n", "v" }, "<leader>lf", function()
+	require("conform").format({
+		lsp_format = "fallback",
+		timeout_ms = 500,
+	})
+end)
