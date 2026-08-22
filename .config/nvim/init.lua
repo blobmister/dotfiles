@@ -59,7 +59,6 @@ vim.keymap.set("n", "<C-Right>", "<cmd>vertical resize -2<cr>", { desc = "Increa
 vim.pack.add({
 	{ src = "https://github.com/neovim/nvim-lspconfig" },
 	{ src = "https://github.com/nvim-mini/mini.nvim" },
-	{ src = "https://github.com/nvim-lua/plenary.nvim" },
 	{ src = "https://github.com/nvim-lualine/lualine.nvim" },
 	{ src = "https://github.com/saghen/blink.cmp", version = vim.version.range("^1") },
 	{ src = "https://github.com/saghen/blink.lib" },
@@ -67,21 +66,18 @@ vim.pack.add({
 	{ src = "https://github.com/mason-org/mason.nvim" },
 	{ src = "https://github.com/mason-org/mason-lspconfig.nvim" },
 	{ src = "https://github.com/lervag/vimtex" },
-	{ src = "https://github.com/MunifTanjim/nui.nvim" },
 	{ src = "https://github.com/RRethy/base16-nvim" },
 	{ src = "https://github.com/acksld/nvim-neoclip.lua" },
 	{ src = "https://github.com/ibhagwan/fzf-lua" },
 	{ src = "https://github.com/stevearc/oil.nvim" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
 	{ src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" },
-	{ src = "https://github.com/kevinhwang91/promise-async" },
-	{ src = "https://github.com/kevinhwang91/nvim-ufo" },
-	{ src = "https://github.com/luukvbaal/statuscol.nvim" },
 	{ src = "https://github.com/lewis6991/gitsigns.nvim" },
 	{ src = "https://github.com/nvimdev/dashboard-nvim" },
 	{ src = "https://github.com/lukas-reineke/indent-blankline.nvim" },
 	{ src = "https://github.com/tpope/vim-fugitive" },
 	{ src = "https://github.com/stevearc/conform.nvim" },
+	{ src = "https://github.com/rafamadriz/friendly-snippets" },
 })
 
 -- Pack Clean
@@ -133,16 +129,6 @@ local custom_header = {
 	"",
 }
 
-local function get_plugin_count()
-	if _G.packer_plugins ~= nil then
-		return vim.tbl_count(_G.packer_plugins)
-	end
-	if vim.g.plugs ~= nil then
-		return vim.tbl_count(vim.g.plugs)
-	end
-	return "??"
-end
-
 db.setup({
 	theme = "doom",
 
@@ -190,6 +176,13 @@ db.setup({
 				key = "n",
 				key_hl = "Number",
 				action = "enew | setlocal buftype=nofile bufhidden=hide noswapfile",
+			},
+			{
+				desc = "Quit",
+				desc_hl = "String",
+				key = "q",
+				key_hl = "Number",
+				action = "qa",
 			},
 		},
 
@@ -242,10 +235,6 @@ vim.api.nvim_create_autocmd("ColorScheme", {
 
 require("lualine").setup({
 	options = { theme = "auto" },
-})
-
-require("lualine").setup({
-	options = { theme = "auto" },
 
 	winbar = {
 		lualine_x = {
@@ -272,7 +261,7 @@ require("mason").setup()
 local capabilities = require("blink.cmp").get_lsp_capabilities()
 require("mason-lspconfig").setup({
 	automatic_enable = true,
-	handleprs = {
+	handlers = {
 		function(server_name)
 			require("lspconfig")[server_name].setup({
 				capabilities = capabilities,
@@ -501,8 +490,6 @@ vim.keymap.set("n", "<C-t>", function()
 	vim.cmd(term_id .. "ToggleTerm direction=horizontal dir=" .. file_dir)
 end, { desc = "Toggle unique terminal for this file" })
 
--- In terminal mode, we don't need to calculate the ID.
--- Calling ToggleTerm with no number just closes whatever terminal you are currently inside.
 vim.keymap.set("t", "<C-t>", "<cmd>ToggleTerm<cr>", { desc = "Close current terminal" })
 
 -- VimTex setup
@@ -562,106 +549,18 @@ end, {})
 vim.keymap.set("n", "<leader>ts", ":TmuxSessionizer<CR>", { desc = "Tmux Sessionizer" })
 vim.keymap.set("n", "<leader>tr", ":TmuxSwitchSession<CR>", { desc = "Switch Tmux Session" })
 
--- Better fold support
-vim.o.foldcolumn = "1"
-vim.o.foldlevel = 99
-vim.o.foldlevelstart = 99
-vim.o.foldenable = true
+-- Folding support
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldenable = false
 
-vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Open all fold expressions" })
-vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Close all fold expressions" })
-vim.keymap.set("n", "zr", require("ufo").openFoldsExceptKinds, { desc = "Fold less" })
-vim.keymap.set("n", "zm", require("ufo").closeFoldsWith, { desc = "Fold more" })
-
-local handler = function(virtText, lnum, endLnum, width, truncate)
-	local newVirtText = {}
-	local suffix = (" 󰁂 %d "):format(endLnum - lnum)
-	local sufWidth = vim.fn.strdisplaywidth(suffix)
-	local targetWidth = width - sufWidth
-	local curWidth = 0
-	for _, chunk in ipairs(virtText) do
-		local chunkText = chunk[1]
-		local chunkWidth = vim.fn.strdisplaywidth(chunkText)
-		if targetWidth > curWidth + chunkWidth then
-			table.insert(newVirtText, chunk)
-		else
-			chunkText = truncate(chunkText, targetWidth - curWidth)
-			local hlGroup = chunk[2]
-			table.insert(newVirtText, { chunkText, hlGroup })
-			chunkWidth = vim.fn.strdisplaywidth(chunkText)
-			if curWidth + chunkWidth < targetWidth then
-				suffix = suffix .. (" "):rep(targetWidth - curWidth - chunkWidth)
-			end
-			break
-		end
-		curWidth = curWidth + chunkWidth
-	end
-	table.insert(newVirtText, { suffix, "MoreMsg" })
-	return newVirtText
-end
-
-require("ufo").setup({
-	fold_virt_text_handler = handler,
-})
-
-require("ufo").setup({
-	provider_selector = function(bufnr, filetype, buftype)
-		if buftype == "nofile" or buftype == "nowrite" then
-			return ""
-		end
-		return { "treesitter", "indent" }
-	end,
-})
-
--- status-col
-vim.opt.number = true
-vim.opt.relativenumber = true
-
-local builtin = require("statuscol.builtin")
-require("statuscol").setup({
-	setopt = true,
-	segments = {
-		{ text = { builtin.foldfunc } },
-		{ text = { "%s" } },
-		{
-			text = { builtin.lnumfunc, " " },
-			condition = { true, builtin.not_empty },
-		},
-	},
-})
-
-local augroup = vim.api.nvim_create_augroup("numbertoggle", { clear = true })
-
-vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave", "CmdlineLeave", "WinEnter" }, {
-	pattern = "*",
-	group = augroup,
-	callback = function()
-		if vim.o.nu and vim.api.nvim_get_mode().mode ~= "i" then
-			vim.opt.relativenumber = true
-		end
-	end,
-})
-
-vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter", "CmdlineEnter", "WinLeave" }, {
-	pattern = "*",
-	group = augroup,
-	callback = function()
-		if vim.o.nu then
-			vim.opt.relativenumber = false
-
-			-- Workaround for https://github.com/neovim/neovim/issues/32068
-			if not vim.tbl_contains({ "@", "-" }, vim.v.event.cmdtype) then
-				vim.cmd("redraw")
-			end
-		end
-	end,
-})
-
-vim.opt.fillchars:append({
+vim.opt.foldcolumn = "1"
+vim.opt.fillchars = {
 	foldopen = "",
 	foldclose = "",
 	foldsep = " ",
-})
+	fold = " ",
+}
 
 -- Git Integration
 require("gitsigns").setup({
