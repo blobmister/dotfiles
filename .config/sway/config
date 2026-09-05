@@ -34,9 +34,11 @@ bindsym $mod+f fullscreen toggle
 bindsym $mod+1 workspace number 1
 bindsym $mod+2 workspace number 2
 bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
 bindsym $mod+Shift+1 move container to workspace number 1
 bindsym $mod+Shift+2 move container to workspace number 2
 bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
 
 # Special keys to adjust volume via PulseAudio
 bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
@@ -57,13 +59,13 @@ bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 
 
 # Screenshot Config
-# 1. Region / Area Selection
+# Region / Area Selection
 bindsym Print exec bash -c 'mkdir -p ~/Pictures/Screenshots && grim -g "$(slurp)" ~/Pictures/Screenshots/screenshot_$(date +%Y%m%d_%H%M%S).png && wl-copy < ~/Pictures/Screenshots/$(ls -t ~/Pictures/Screenshots | head -n 1)'
-# 2. Focused Window Only
+# Focused Window Only
 bindsym $mod+p exec bash -c 'mkdir -p ~/Pictures/Screenshots && FILE=~/Pictures/Screenshots/screenshot_$(date +%Y%m%d_%H%M%S).png && grim -g "$(swaymsg -t get_tree | jq -r ".. | select(.focused? == true).rect | \"\(.x),\(.y) \(.width)x\(.height)\"")" "$FILE" && wl-copy < "$FILE"'
-# 3. Full Screen / Output
+# Full Screen / Output
 bindsym $mod+Ctrl+p exec bash -c 'mkdir -p ~/Pictures/Screenshots && FILE=~/Pictures/Screenshots/screenshot_$(date +%Y%m%d_%H%M%S).png && grim "$FILE" && wl-copy < "$FILE"'
-# 4. Region Selection with Quick Annotation Editor (Swappy)
+# Region Selection with Quick Annotation Editor (Swappy)
 bindsym $mod+Shift+p exec grim -g "$(slurp)" - | swappy -f -
 
 # Special key to start an application with wmenu-run                                       
@@ -107,3 +109,22 @@ exec_always {
     gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
     gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
 }
+
+# Setup for wayland env bus
+exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+
+# Setup for wallpapers
+exec wpaperd
+
+# Clamshell Mode
+set $laptop_screen eDP-1
+bindswitch --reload --locked lid:on exec ~/.local/bin/lid-power-policy
+bindswitch --reload --locked lid:off output $laptop_screen enable
+
+# Kanshi setup
+exec_always kanshi
+
+# Reload nwg-display dump on reconnect
+include ~/.config/sway/outputs
+include ~/.config/sway/workspaces
