@@ -28,6 +28,7 @@ bindsym $mod+Shift+h move left
 bindsym $mod+Shift+l move right
 bindsym $mod+Shift+k move up
 bindsym $mod+Shift+j move down
+bindsym $mod+f fullscreen toggle
 
 # --- Workspaces ---
 bindsym $mod+1 workspace number 1
@@ -54,21 +55,55 @@ bindsym --locked XF86AudioStop exec playerctl stop
 bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
 bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 
-# Screenshot setup
-# Region / Area Selection (Select with mouse -> Copies to clipboard + Saves to Pictures)
-bindsym Print exec grim -g "$(slurp)" - | wl-copy
-# Focused Window Only (Snaps active window -> Copies to clipboard + Saves)
-bindsym $mod+p exec swaymsg -t get_tree | jq -r '.. | select(.focused? == true).rect | "\(.x),\(.y) \(.width)x\(.height)"' | grim -g - - | wl-copy
-# Full Screen / Output (Snaps entire monitor -> Copies to clipboard)
-bindsym $mod+Ctrl+p exec grim - | wl-copy
-# Region Selection WITH Quick Annotation Editor (opens Swappy to draw/blur/arrow)
-bindsym $mod+Shift+p exec grim -g "$(slurp)" - | swappy -f -
 
+# Screenshot Config
+# 1. Region / Area Selection
+bindsym Print exec bash -c 'mkdir -p ~/Pictures/Screenshots && grim -g "$(slurp)" ~/Pictures/Screenshots/screenshot_$(date +%Y%m%d_%H%M%S).png && wl-copy < ~/Pictures/Screenshots/$(ls -t ~/Pictures/Screenshots | head -n 1)'
+# 2. Focused Window Only
+bindsym $mod+p exec bash -c 'mkdir -p ~/Pictures/Screenshots && FILE=~/Pictures/Screenshots/screenshot_$(date +%Y%m%d_%H%M%S).png && grim -g "$(swaymsg -t get_tree | jq -r ".. | select(.focused? == true).rect | \"\(.x),\(.y) \(.width)x\(.height)\"")" "$FILE" && wl-copy < "$FILE"'
+# 3. Full Screen / Output
+bindsym $mod+Ctrl+p exec bash -c 'mkdir -p ~/Pictures/Screenshots && FILE=~/Pictures/Screenshots/screenshot_$(date +%Y%m%d_%H%M%S).png && grim "$FILE" && wl-copy < "$FILE"'
+# 4. Region Selection with Quick Annotation Editor (Swappy)
+bindsym $mod+Shift+p exec grim -g "$(slurp)" - | swappy -f -
 
 # Special key to start an application with wmenu-run                                       
 bindsym XF86Search exec $menu
 
+# Theming
+include colorscheme
+
+# Basic color configuration using the Base16 variables for windows and borders.
+# Property Name         Border  BG      Text    Indicator Child Border
+client.focused          $base05 $base0D $base00 $base0D $base0D
+client.focused_inactive $base01 $base01 $base05 $base03 $base01
+client.unfocused        $base01 $base00 $base05 $base01 $base01
+client.urgent           $base08 $base08 $base00 $base08 $base08
+client.placeholder      $base00 $base00 $base05 $base00 $base00
+client.background       $base07
+
+smart_borders on
+default_border pixel 1
+default_floating_border pixel 1
+
+# Waybar icons
+exec blueman-applet
+exec pasystray
+exec nm-applet --indicator
+for_window [app_id="pavucontrol"] floating enable, resize set 700 500
+for_window [app_id="blueman-manager"] floating enable, resize set 800 600, move position center
 
 
+# External screen setup
+bindsym XF86Display exec nwg-displays
+for_window [app_id="nwg-displays"] floating enable, move position center
 
+# Make scrolling direction normal
+input type:touchpad {
+    natural_scroll enabled
+}
 
+# Set system wide config to dark mode
+exec_always {
+    gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+    gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
+}
