@@ -17,6 +17,7 @@ bindsym $mod+Return exec $term
 bindsym $mod+Shift+q kill
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exit
+bindsym $mod+Ctrl+h exec systemctl hibernate
 
 # --- Navigation ---
 bindsym $mod+h focus left
@@ -30,15 +31,22 @@ bindsym $mod+Shift+k move up
 bindsym $mod+Shift+j move down
 bindsym $mod+f fullscreen toggle
 
+bindsym $mod+s splith
+bindsym $mod+v splitv
+
 # --- Workspaces ---
 bindsym $mod+1 workspace number 1
 bindsym $mod+2 workspace number 2
 bindsym $mod+3 workspace number 3
 bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+0 workspace number 10
 bindsym $mod+Shift+1 move container to workspace number 1
 bindsym $mod+Shift+2 move container to workspace number 2
 bindsym $mod+Shift+3 move container to workspace number 3
 bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5 
+bindsym $mod+Shift+0 move container to workspace number 10
 
 # Special keys to adjust volume via PulseAudio
 bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
@@ -117,14 +125,46 @@ exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DE
 # Setup for wallpapers
 exec wpaperd
 
-# Clamshell Mode
-set $laptop_screen eDP-1
-bindswitch --reload --locked lid:on exec ~/.local/bin/lid-power-policy
-bindswitch --reload --locked lid:off output $laptop_screen enable
-
 # Kanshi setup
 exec_always kanshi
 
 # Reload nwg-display dump on reconnect
 include ~/.config/sway/outputs
 include ~/.config/sway/workspaces
+
+# Disable laptop screen when closed/open
+bindswitch --reload --locked lid:on output eDP-1 disable
+bindswitch --reload --locked lid:off output eDP-1 enable
+
+exec_always "sleep 0.2 && if grep -q closed /proc/acpi/button/lid/*/state; then swaymsg output eDP-1 disable; else swaymsg output eDP-1 enable; fi"
+
+# Lock screen before sleep and manage idle state
+exec swayidle -w \
+    timeout 300 'physlock -s -d' \
+    timeout 600 'systemctl suspend' \
+    before-sleep 'physlock -s -d'
+
+# Auto numlock
+input * {
+    xkb_numlock enabled
+}
+
+# Restart Waybar.
+bindsym $mod+Shift+w exec "pkill -x waybar; while pgrep -x waybar >/dev/null; do sleep 0.1; done; exec waybar"
+
+
+# Workspace assignments
+assign [app_id="ts-term"] 1
+assign [app_id="firefox"] 2
+assign [app_id="vesktop"] 3
+assign [app_id="spotify"] 4
+assign [app_id="btop-term"] 10
+
+# Autostart applications
+exec kitty --app-id ts-term -e bash -ic 'ts "$HOME" || bash'
+exec firefox
+exec vesktop
+exec spotify-launcher
+exec kitty --app-id btop-term -e btop
+
+exec swaymsg 'workspace 1'

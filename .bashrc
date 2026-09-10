@@ -32,3 +32,16 @@ fi
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
 	exec sway
 fi
+
+# fzf to directory
+fcd() {
+	local dir
+	dir=$(fd --type d --hidden --exclude .git . ~ | fzf --preview 'tree -C {} | head -20') && cd "$dir"
+}
+
+# Readline options
+bind "set completion-ignore-case on"
+bind "set show-all-if-ambiguous on"
+
+# Enable fzf keybindings and completions
+eval "$(fzf --bash)"

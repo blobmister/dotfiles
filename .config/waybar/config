@@ -4,8 +4,7 @@
 	"height": 24,
 	"modules-left": [
 		"sway/workspaces",
-		"sway/mode",
-		"custom/spotify"
+		"sway/mode"
 	],
 	"modules-center": [
 		"clock"
@@ -82,6 +81,7 @@
 		"on-click": "pavucontrol"
 	},
 	"mpris": {
+		"player": "spotify",
 		"format": "{player_icon} {status_icon}",
 		"format-paused": "{player_icon} {status_icon}",
 		"status-icons": {
