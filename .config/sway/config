@@ -142,7 +142,6 @@ exec_always "sleep 0.2 && if grep -q closed /proc/acpi/button/lid/*/state; then 
 exec swayidle -w \
     timeout 300 'physlock -s -d' \
     timeout 600 'systemctl suspend' \
-    before-sleep 'physlock -s -d'
 
 # Auto numlock
 input * {
