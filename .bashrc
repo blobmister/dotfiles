@@ -21,6 +21,7 @@ fi
 alias ts='~/.local/bin/tmux-sessionizer.sh'
 alias dotsync='~/.local/bin/dotfiles_sync.sh'
 alias fzflaunch='~/.local/bin/fzf-launcher.sh'
+alias pacfz='~/.local/bin/pacfz.sh'
 
 # add nvcc to path if it exists
 if [ -d "/usr/local/cuda/bin" ]; then

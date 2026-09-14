@@ -2,17 +2,45 @@
 
 export FZF_DEFAULT_OPTS='--height 80% --layout=reverse --border --preview-window=right:50%:wrap'
 
-case "$1" in
+PKG_MGR="pacman"
+MODE="pacman"
+
+command=""
+for arg in "$@"; do
+	case "$arg" in
+	--aur | -a)
+		PKG_MGR="yay"
+		MODE="AUR"
+		;;
+	install | i | remove | r | browse | b)
+		command="$arg"
+		;;
+	*)
+		echo "Unknown argument: $arg"
+		echo "Usage: parfz [--aur|-a] {install|remove|browse}"
+		exit 1
+		;;
+	esac
+done
+
+if [[ -z "$command" ]]; then
+	echo "Usage: parfz [--aur|-a] {install|remove|browse}"
+	echo "Example: parfz install"
+	echo "Example: parfz --aur install"
+	exit 1
+fi
+
+case "$command" in
 install | i)
 	echo "Search and select packages to INSTALL (Use Tab to select multiple)..."
 
 	mapfile -t pkgs < <(
-		yay -Slq |
-			fzf -m --preview 'yay -Si -- {}'
+		"$PKG_MGR" -Slq |
+			fzf -m --preview "$PKG_MGR -Si -- {}"
 	)
 
 	if ((${#pkgs[@]})); then
-		yay -S "${pkgs[@]}"
+		"$PKG_MGR" -S "${pkgs[@]}"
 	else
 		echo "No packages selected."
 	fi
@@ -22,27 +50,21 @@ remove | r)
 	echo "Search and select packages to REMOVE (Use Tab to select multiple)..."
 
 	mapfile -t pkgs < <(
-		yay -Qq |
-			fzf -m --preview 'yay -Qi -- {}'
+		pacman -Qq |
+			fzf -m --preview 'pacman -Qi -- {}'
 	)
 
 	if ((${#pkgs[@]})); then
-		yay -Rns "${pkgs[@]}"
+		"$PKG_MGR" -Rns "${pkgs[@]}"
 	else
 		echo "No packages selected."
 	fi
 	;;
 
 browse | b)
-	echo "Browsing official packages (Esc or Ctrl+C to exit)..."
+	echo "Browsing $MODE packages (Esc or Ctrl+C to exit)..."
 
-	yay -Slq |
-		fzf --preview 'yay -Si -- {}'
-	;;
-
-*)
-	echo "Usage: parfz {install|remove|browse} or {i|r|b}"
-	echo "Example: parfz install"
-	exit 1
+	"$PKG_MGR" -Slq |
+		fzf --preview "$PKG_MGR -Si -- {}"
 	;;
 esac

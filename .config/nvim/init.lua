@@ -35,6 +35,7 @@ vim.o.showmode = false
 vim.o.autoread = true
 vim.o.cursorline = true
 vim.o.cursorlineopt = "line,number"
+vim.g.neovide_font_ligatures = false
 
 -- Default keymaps
 vim.keymap.set("n", "<C-h>", "<C-w>h")

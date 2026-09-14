@@ -139,7 +139,7 @@ bindswitch --reload --locked lid:off output eDP-1 enable
 exec_always "sleep 0.2 && if grep -q closed /proc/acpi/button/lid/*/state; then swaymsg output eDP-1 disable; else swaymsg output eDP-1 enable; fi"
 
 # Lock screen before sleep and manage idle state
-exec swayidle -w \
+exec_always pkill -x swayidle; swayidle -w -d \
     timeout 400 'systemctl suspend' \
 
 # Auto numlock
