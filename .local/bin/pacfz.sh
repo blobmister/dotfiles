@@ -3,21 +3,21 @@
 export FZF_DEFAULT_OPTS='--height 80% --layout=reverse --border --preview-window=right:50%:wrap'
 
 PKG_MGR="pacman"
-MODE="pacman"
+MODE="Official"
 
 command=""
 for arg in "$@"; do
 	case "$arg" in
-	--aur | -a)
+	--aur | -a | --all)
 		PKG_MGR="yay"
-		MODE="AUR"
+		MODE="Official + AUR"
 		;;
 	install | i | remove | r | browse | b)
 		command="$arg"
 		;;
 	*)
 		echo "Unknown argument: $arg"
-		echo "Usage: parfz [--aur|-a] {install|remove|browse}"
+		echo "Usage: parfz [--aur|-a|--all] {install|remove|browse}"
 		exit 1
 		;;
 	esac
