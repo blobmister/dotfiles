@@ -35,8 +35,14 @@ install | i)
 	echo "Search and select packages to INSTALL (Use Tab to select multiple)..."
 
 	mapfile -t pkgs < <(
-		"$PKG_MGR" -Slq |
-			fzf -m --preview "$PKG_MGR -Si -- {}"
+		"$PKG_MGR" -Sl | awk '{
+            if ($0 ~ /\[installed/)
+                print "\033[32m" $2 "\033[0m"
+            else
+                print $2
+        }' |
+			fzf -m --ansi --preview "$PKG_MGR -Si -- {}" |
+			sed 's/\x1b\[[0-9;]*m//g'
 	)
 
 	if ((${#pkgs[@]})); then
@@ -64,7 +70,12 @@ remove | r)
 browse | b)
 	echo "Browsing $MODE packages (Esc or Ctrl+C to exit)..."
 
-	"$PKG_MGR" -Slq |
-		fzf --preview "$PKG_MGR -Si -- {}"
+	"$PKG_MGR" -Sl | awk '{
+        if ($0 ~ /\[installed/)
+            print "\033[32m" $2 "\033[0m"
+        else
+            print $2
+    }' |
+		fzf --ansi --preview "$PKG_MGR -Si -- {}"
 	;;
 esac
