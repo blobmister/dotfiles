@@ -13,6 +13,7 @@
 		"mpris",
 		"pulseaudio",
 		"battery",
+		"backlight",
 		"tray"
 	],
 	"sway/workspaces": {
@@ -49,7 +50,7 @@
 			"warning": 30,
 			"critical": 15
 		},
-		"format": "{icon}  {capacity}%",
+		"format": "{icon}   {capacity}%",
 		"format-charging": "{icon}   {capacity}%",
 		"format-plugged": "{icon}   {capacity}%",
 		"format-alt": "{time} {icon}",
@@ -63,8 +64,8 @@
 		"tooltip-format": "{time} remaining ({power}W draw)"
 	},
 	"pulseaudio": {
-		"format": "{icon}    {volume}% ",
-		"format-bluetooth": "{icon}    {volume}% ",
+		"format": "{icon}    {volume}%",
+		"format-bluetooth": "{icon}    {volume}%",
 		"format-muted": "",
 		"format-icons": {
 			"headphones": "",
@@ -85,8 +86,8 @@
 		"format": "{player_icon} {status_icon}",
 		"format-paused": "{player_icon} {status_icon}",
 		"status-icons": {
-			"playing": "⏸",
-			"paused": "▶"
+			"playing": "⏸ ",
+			"paused": "▶ "
 		},
 		"tooltip-format": "{player}: {artist} - {title}",
 		"tooltip-format-paused": "{player}: {artist} - {title} (Paused)",
@@ -95,5 +96,15 @@
 		"on-click-middle": "playerctl -p spotify previous",
 		"on-scroll-up": "playerctl -p spotify next",
 		"on-scroll-down": "playerctl -p spotify previous"
-	}
+	},
+	"backlight": {
+		"format": "{icon}  {percent}%",
+		"format-icons": [
+			"󰃞",
+			"󰃟",
+			"󰃠"
+		],
+		"on-scroll-up": "brightnessctl set +5%",
+		"on-scroll-down": "brightnessctl set 5%-"
+	},
 }
